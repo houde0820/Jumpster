@@ -5,4 +5,8 @@
         android:id="@+id/action_month"
         android:title="本月统计"
         app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_undo"
+        android:title="撤销"
+        app:showAsAction="always|withText" />
 </menu>

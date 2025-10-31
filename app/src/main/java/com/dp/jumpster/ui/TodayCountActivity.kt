@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -104,6 +105,10 @@ class TodayCountActivity : AppCompatActivity() {
                 startActivity(Intent(this, MonthCalendarActivity::class.java))
                 true
             }
+            R.id.action_undo -> {
+                onUndoLatest()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -129,22 +134,86 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun onAddClick() {
-        val addVal = inputEdit.text.toString().toIntOrNull() ?: 0
-        if (addVal == 0) {
-            inputEdit.setText("")
-            return
-        }
+        val parsed = parseAndValidateInput() ?: return
+        val addVal = parsed
         val newCount = todayCount + addVal
+        if (!validateTotal(newCount)) return
         saveTodayCountAndEntry(prev = todayCount, type = "add", inputVal = addVal, finalCount = newCount)
     }
 
     private fun onCoverClick() {
-        val coverVal = inputEdit.text.toString().toIntOrNull() ?: 0
-        if (coverVal == 0) {
-            inputEdit.setText("")
-            return
-        }
+        val coverVal = parseAndValidateInput() ?: return
+        if (!validateTotal(coverVal)) return
         saveTodayCountAndEntry(prev = todayCount, type = "cover", inputVal = coverVal, finalCount = coverVal)
+    }
+
+    private fun parseAndValidateInput(): Int? {
+        val raw = inputEdit.text?.toString()?.trim() ?: ""
+        if (raw.isEmpty()) {
+            inputEdit.error = "请输入数字"
+            inputEdit.requestFocus()
+            return null
+        }
+        val normalized = raw.trimStart('0').ifEmpty { "0" }
+        val num = normalized.toIntOrNull()
+        if (num == null) {
+            inputEdit.error = "格式不正确"
+            inputEdit.requestFocus()
+            return null
+        }
+        if (num <= 0) {
+            inputEdit.error = "请输入大于0的数字"
+            inputEdit.requestFocus()
+            return null
+        }
+        if (normalized != raw) {
+            inputEdit.setText(num.toString())
+            inputEdit.setSelection(inputEdit.text?.length ?: 0)
+        }
+        val MAX_INPUT = 100_000
+        if (num > MAX_INPUT) {
+            Toast.makeText(this, "输入过大，已限制为 $MAX_INPUT", Toast.LENGTH_SHORT).show()
+            inputEdit.setText(MAX_INPUT.toString())
+            inputEdit.setSelection(inputEdit.text?.length ?: 0)
+            return MAX_INPUT
+        }
+        return num
+    }
+
+    private fun validateTotal(total: Int): Boolean {
+        val MAX_TOTAL = 1_000_000
+        if (total > MAX_TOTAL) {
+            Toast.makeText(this, "累计过大，最大支持 $MAX_TOTAL", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
+    }
+
+    private fun onUndoLatest() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = AppDatabase.getInstance(this@TodayCountActivity)
+            val entryDao = db.jumpEntryDao()
+            val latest = entryDao.getLatestByDate(todayStr) ?: run {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(this@TodayCountActivity, "无可撤销记录", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+            val prevTotal = entryDao.getPrevTotalAfter(todayStr) ?: 0
+            db.jumpRecordDao().insertRecord(JumpRecord(todayStr, prevTotal))
+            entryDao.deleteById(latest.id)
+            todayCount = prevTotal
+            val updatedList = entryDao.getEntriesByDate(todayStr)
+            val limited = if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
+            launch(Dispatchers.Main) {
+                countText.text = "今日累计：$todayCount"
+                adapter.setHighlightKey(null)
+                adapter.submitList(ArrayList(limited)) {
+                    rvToday.scrollToPosition(0)
+                }
+                Toast.makeText(this@TodayCountActivity, "已撤销最近一次操作", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun saveTodayCountAndEntry(prev: Int, type: String, inputVal: Int, finalCount: Int) {

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [JumpRecord::class, JumpEntry::class], version = 2)
+@Database(entities = [JumpRecord::class, JumpEntry::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jumpRecordDao(): JumpRecordDao
     abstract fun jumpEntryDao(): JumpEntryDao
