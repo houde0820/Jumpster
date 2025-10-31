@@ -10,9 +10,12 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -21,6 +24,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.dp.jumpster.R
 import com.dp.jumpster.data.AppDatabase
+import com.dp.jumpster.util.ShareCardGenerator
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -43,6 +47,8 @@ class MonthCalendarActivity : AppCompatActivity() {
     private lateinit var weekSumText: TextView
     private lateinit var weekHeaderLayout: LinearLayout
     private val dayCountMap = HashMap<LocalDate, Int>()
+    private var currentMonthSum = 0
+    private var currentMonthStr = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +56,7 @@ class MonthCalendarActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "月度统计"
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         calendarView = findViewById(R.id.calendarView)
@@ -60,7 +67,8 @@ class MonthCalendarActivity : AppCompatActivity() {
         weekHeaderLayout = findViewById(R.id.week_header_layout)
 
         val currentMonth = YearMonth.now()
-        monthTitleText.text = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " 跳绳统计"
+        currentMonthStr = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"))
+        monthTitleText.text = "$currentMonthStr 跳绳统计"
 
         setupWeekHeader()
 
@@ -71,7 +79,8 @@ class MonthCalendarActivity : AppCompatActivity() {
         calendarView.scrollToMonth(currentMonth)
 
         calendarView.monthScrollListener = { month: CalendarMonth ->
-            monthTitleText.text = month.yearMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")) + " 跳绳统计"
+            currentMonthStr = month.yearMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"))
+            monthTitleText.text = "$currentMonthStr 跳绳统计"
             loadMonthData(month.yearMonth)
         }
 
@@ -114,11 +123,11 @@ class MonthCalendarActivity : AppCompatActivity() {
                 val local = LocalDate.parse(r.date)
                 dayCountMap[local] = r.count
             }
-            val monthSum = dayCountMap.filterKeys { it.year == yearMonth.year && it.month == yearMonth.month }
+            currentMonthSum = dayCountMap.filterKeys { it.year == yearMonth.year && it.month == yearMonth.month }
                 .values.sum()
             launch(Dispatchers.Main) {
                 calendarView.notifyCalendarChanged()
-                monthSumText.text = "本月合计：$monthSum"
+                monthSumText.text = "本月合计：$currentMonthSum"
                 updateWeekSum(LocalDate.now())
             }
         }
@@ -134,6 +143,33 @@ class MonthCalendarActivity : AppCompatActivity() {
             d = d.plusDays(1)
         }
         weekSumText.text = "本周合计：$sum"
+    }
+    
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_month, menu)
+        return true
+    }
+    
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_share_month -> {
+                shareMonth()
+                true
+            }
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    
+    private fun shareMonth() {
+        if (currentMonthSum > 0) {
+            ShareCardGenerator(this).shareMonth(currentMonthSum, currentMonthStr)
+        } else {
+            Toast.makeText(this, "本月还没有记录哦", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun vibrateClick(view: View) {

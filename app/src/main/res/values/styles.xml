@@ -5,6 +5,11 @@
         <item name="android:textColor">@color/sport_on_primary</item>
     </style>
 
+    <style name="ShapeAppearance.JS.Rounded2" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <style name="ShapeAppearance.JS.Rounded" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
@@ -14,6 +19,9 @@
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
     </style>
 
+    <style name="Widget.JS.InputButton" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded2</item>
+    </style>
     <style name="Widget.JS.Button" parent="Widget.Material3.Button">
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
     </style>

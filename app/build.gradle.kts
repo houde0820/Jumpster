@@ -52,6 +52,9 @@ dependencies {
 
     // Kizitonwose CalendarView（日历控件，MavenCentral 可用）
     implementation("com.kizitonwose.calendar:view:2.5.0")
+    
+    // MPAndroidChart 图表库
+    implementation(libs.mpandroidchart)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

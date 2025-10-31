@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 深色模式下的文本样式 -->
+    <style name="TextAppearance.JS.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- 深色模式下的圆角样式 -->
+    <style name="ShapeAppearance.JS.Rounded" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <!-- 深色模式下的输入框样式 -->
+    <style name="Widget.JS.TextInputLayout.Dark" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="boxStrokeColor">@color/sport_primary</item>
+        <item name="hintTextColor">@color/sport_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+
+    <!-- 深色模式下的按钮样式 -->
+    <style name="Widget.JS.Button.Dark" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="android:textColor">@color/sport_on_primary</item>
+        <item name="backgroundTint">@color/sport_primary</item>
+        <item name="elevation">2dp</item>
+    </style>
+
+    <!-- 深色模式下的轮廓按钮样式 -->
+    <style name="Widget.JS.Button.Outlined.Dark" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="strokeColor">@color/sport_primary</item>
+        <item name="android:textColor">@color/sport_primary</item>
+    </style>
+
+    <!-- 深色模式下的卡片样式 -->
+    <style name="Widget.JS.CardView.Dark" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/sport_card_background</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardCornerRadius">16dp</item>
+    </style>
+</resources>

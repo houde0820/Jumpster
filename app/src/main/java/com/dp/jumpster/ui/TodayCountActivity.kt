@@ -28,6 +28,7 @@ import com.dp.jumpster.R
 import com.dp.jumpster.data.AppDatabase
 import com.dp.jumpster.data.JumpEntry
 import com.dp.jumpster.data.JumpRecord
+import com.dp.jumpster.util.ShareCardGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -105,11 +106,27 @@ class TodayCountActivity : AppCompatActivity() {
                 startActivity(Intent(this, MonthCalendarActivity::class.java))
                 true
             }
+            R.id.action_trend -> {
+                startActivity(Intent(this, TrendChartActivity::class.java))
+                true
+            }
+            R.id.action_share -> {
+                shareToday()
+                true
+            }
             R.id.action_undo -> {
                 onUndoLatest()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+    
+    private fun shareToday() {
+        if (todayCount > 0) {
+            ShareCardGenerator(this).shareToday(todayCount, todayStr)
+        } else {
+            Toast.makeText(this, "今日还没有记录哦", Toast.LENGTH_SHORT).show()
         }
     }
 

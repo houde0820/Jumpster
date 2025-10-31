@@ -6,6 +6,6 @@
     <path
         android:fillColor="#00000000"
         android:strokeColor="@color/sport_on_primary"
-        android:strokeWidth="10"
+        android:strokeWidth="20"
         android:pathData="M54,18 a36,36 0 1,1 0,72 a36,36 0 1,1 0,-72"/>
 </vector>

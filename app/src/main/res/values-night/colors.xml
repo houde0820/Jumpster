@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="sport_primary">#00C853</color>
-    <color name="sport_secondary">#FF9100</color>
-    <color name="sport_surface">#121212</color>
-    <color name="sport_on_primary">#FFFFFFFF</color>
+    <!-- 深色模式下的运动风格主色系，提高对比度 -->
+    <color name="sport_primary">#00E676</color> <!-- 更亮的绿色，提高暗背景下的可见度 -->
+    <color name="sport_secondary">#FFAB00</color> <!-- 更亮的橙色 -->
+    <color name="sport_surface">#121212</color> <!-- Material Design 推荐的深色背景 -->
+    <color name="sport_on_primary">#FFFFFF</color> <!-- 白色文字在深色模式下 -->
+    <color name="sport_card_background">#1E1E1E</color> <!-- 卡片背景色 -->
+    <color name="sport_card_stroke">#2A2A2A</color> <!-- 卡片边框色 -->
+    
+    <!-- 深色模式下的文字颜色 -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3FFFFFF</color> <!-- 70% 白色 -->
+    <color name="text_hint">#80FFFFFF</color> <!-- 50% 白色 -->
 </resources>

@@ -4,9 +4,21 @@
     <item
         android:id="@+id/action_month"
         android:title="本月统计"
-        app:showAsAction="always|withText" />
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_trend"
+        android:title="趋势图"
+        android:icon="@drawable/ic_trend"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_share"
+        android:title="分享"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_undo"
         android:title="撤销"
-        app:showAsAction="always|withText" />
+        android:icon="@drawable/ic_undo"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,7 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- 深色模式主题 -->
     <style name="Base.Theme.Jumpster" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- 主色调 -->
+        <item name="colorPrimary">@color/sport_primary</item>
+        <item name="colorOnPrimary">@color/sport_on_primary</item>
+        <item name="colorSecondary">@color/sport_secondary</item>
+        <item name="colorSurface">@color/sport_surface</item>
+        <item name="colorControlHighlight">#4DFFFFFF</item> <!-- 30% 白色按压效果 -->
+        
+        <!-- 文字颜色 -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        
+        <!-- 卡片和阴影样式 -->
+        <item name="cardBackgroundColor">@color/sport_card_background</item>
+        <item name="cardElevation">2dp</item> <!-- 统一卡片阴影 -->
+        
+        <!-- 继承自定义组件样式 -->
+        <item name="textInputStyle">@style/Widget.JS.TextInputLayout.Dark</item>
+        <item name="materialButtonStyle">@style/Widget.JS.Button.Dark</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.JS.Button.Outlined.Dark</item>
+        <item name="actionMenuTextColor">@color/sport_on_primary</item>
     </style>
 </resources>
