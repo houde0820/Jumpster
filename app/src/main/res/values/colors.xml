@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 运动风格主色系 -->
+    <color name="sport_primary">#00C853</color> <!-- 绿色，活力 -->
+    <color name="sport_secondary">#FF6D00</color> <!-- 橙色，强调 -->
+    <color name="sport_surface">#F5F7F9</color>
+    <color name="sport_on_primary">#FF000000</color>
+
+    <!-- 兼容之前紫色引用 -->
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="purple_200">#BB86FC</color>
 </resources>

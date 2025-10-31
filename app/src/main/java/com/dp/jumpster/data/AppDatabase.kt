@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [JumpRecord::class], version = 1)
+@Database(entities = [JumpRecord::class, JumpEntry::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jumpRecordDao(): JumpRecordDao
+    abstract fun jumpEntryDao(): JumpEntryDao
 
     companion object {
         @Volatile
@@ -19,7 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "jumpster_db"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

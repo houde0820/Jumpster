@@ -1,8 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.Jumpster" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/sport_primary</item>
+        <item name="colorOnPrimary">@color/sport_on_primary</item>
+        <item name="colorSecondary">@color/sport_secondary</item>
+        <item name="colorSurface">@color/sport_surface</item>
+        <item name="colorControlHighlight">@color/purple_200</item>
+
+        <item name="textInputStyle">@style/Widget.JS.TextInputLayout</item>
+        <item name="materialButtonStyle">@style/Widget.JS.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.JS.Button.Outlined</item>
+        <item name="actionMenuTextColor">@color/sport_on_primary</item>
     </style>
 
     <style name="Theme.Jumpster" parent="Base.Theme.Jumpster" />
