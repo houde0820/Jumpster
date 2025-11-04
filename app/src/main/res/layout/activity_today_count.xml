@@ -74,10 +74,10 @@
                 android:id="@+id/edit_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:digits="0123456789"
-                android:hint="请输入本次数量或新累计数"
+                android:digits="0123456789+-"
+                android:hint="输入数量，支持加减运算"
                 android:importantForAutofill="no"
-                android:inputType="number" />
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton

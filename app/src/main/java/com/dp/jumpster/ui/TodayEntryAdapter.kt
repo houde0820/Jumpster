@@ -58,14 +58,24 @@ class TodayEntryAdapter : ListAdapter<JumpEntry, TodayEntryAdapter.EntryVH>(Diff
     class EntryVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.text_title)
         private val subtitle: TextView = itemView.findViewById(R.id.text_subtitle)
-        private val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+        private val timeFmt = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        
         fun bind(e: JumpEntry) {
             val typeLabel = if (e.type == "add") "追加" else "覆盖"
             val valueStr = if (e.type == "add") "+${e.value}" else "→ ${e.totalAfter}"
             title.text = "$typeLabel $valueStr"
             val colorId = if (e.type == "add") R.color.sport_primary else R.color.sport_secondary
             title.setTextColor(ContextCompat.getColor(itemView.context, colorId))
-            subtitle.text = "${timeFmt.format(Date(e.timestamp))} | 累计 ${e.totalAfter}"
+            
+            // 显示时间范围
+            val timeInfo = if (e.startTime > 0 && e.endTime > 0 && e.endTime > e.startTime) {
+                val duration = (e.endTime - e.startTime) / 1000 // 秒
+                val durationStr = if (duration < 60) "${duration}秒" else "${duration/60}分${duration%60}秒"
+                "${timeFmt.format(Date(e.timestamp))} | 用时 $durationStr | 累计 ${e.totalAfter}"
+            } else {
+                "${timeFmt.format(Date(e.timestamp))} | 累计 ${e.totalAfter}"
+            }
+            subtitle.text = timeInfo
         }
     }
 }

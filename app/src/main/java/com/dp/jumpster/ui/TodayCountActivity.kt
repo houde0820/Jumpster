@@ -28,7 +28,9 @@ import com.dp.jumpster.R
 import com.dp.jumpster.data.AppDatabase
 import com.dp.jumpster.data.JumpEntry
 import com.dp.jumpster.data.JumpRecord
+import com.dp.jumpster.service.ReminderService
 import com.dp.jumpster.util.ShareCardGenerator
+import com.dp.jumpster.util.SimpleCalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -47,6 +49,9 @@ class TodayCountActivity : AppCompatActivity() {
     private val todayStr: String
         get() = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
+    // 记录开始时间
+    private var inputStartTime: Long = 0
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_today_count)
@@ -74,6 +79,20 @@ class TodayCountActivity : AppCompatActivity() {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(inputEdit, InputMethodManager.SHOW_IMPLICIT)
         }
+        
+        // 键盘回车默认追加
+        inputEdit.setOnEditorActionListener { _, _, _ ->
+            onAddClick()
+            true
+        }
+        
+        // 记录输入开始时间
+        inputEdit.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                inputStartTime = System.currentTimeMillis()
+            }
+        }
+        inputStartTime = System.currentTimeMillis() // 初始化时记录开始时间
 
         adapter.onItemClickListener = object : TodayEntryAdapter.OnItemClickListener {
             override fun onItemClick(entry: JumpEntry) {
@@ -92,6 +111,11 @@ class TodayCountActivity : AppCompatActivity() {
         coverButton.setOnClickListener {
             vibrateClick(it)
             onCoverClick()
+        }
+        
+        // 如果提醒已开启，显示提醒状态
+        if (ReminderService.isReminderActive(this)) {
+            showReminderStatus()
         }
     }
 
@@ -127,6 +151,25 @@ class TodayCountActivity : AppCompatActivity() {
             ShareCardGenerator(this).shareToday(todayCount, todayStr)
         } else {
             Toast.makeText(this, "今日还没有记录哦", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    /**
+     * 显示提醒状态信息
+     */
+    private fun showReminderStatus() {
+        val isActive = ReminderService.isReminderActive(this)
+        val isTimerStarted = ReminderService.isTimerStarted(this)
+        val lastJumpTime = ReminderService.getLastJumpTime(this)
+        
+        if (isActive) {
+            if (isTimerStarted) {
+                val message = "提醒已开启，每10分钟提醒一次"
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            } else {
+                val message = "提醒已开启，待记录第一次跳绳数据后开始计时"
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -171,22 +214,47 @@ class TodayCountActivity : AppCompatActivity() {
             inputEdit.requestFocus()
             return null
         }
-        val normalized = raw.trimStart('0').ifEmpty { "0" }
-        val num = normalized.toIntOrNull()
+        
+        // 检查是否包含加减运算符
+        val hasOperators = raw.contains('+') || raw.contains('-')
+        
+        val num = if (hasOperators) {
+            // 使用计算器解析表达式
+            SimpleCalculator.calculate(raw)
+        } else {
+            // 处理前导零
+            val normalized = raw.trimStart('0').ifEmpty { "0" }
+            val parsedNum = normalized.toIntOrNull()
+            
+            // 更新输入框内容，移除前导零
+            if (parsedNum != null && normalized != raw) {
+                inputEdit.setText(normalized)
+                inputEdit.setSelection(inputEdit.text?.length ?: 0)
+            }
+            
+            parsedNum
+        }
+        
+        // 验证结果
         if (num == null) {
-            inputEdit.error = "格式不正确"
+            inputEdit.error = "表达式格式不正确"
             inputEdit.requestFocus()
             return null
         }
+        
         if (num <= 0) {
-            inputEdit.error = "请输入大于0的数字"
+            inputEdit.error = "结果必须大于0"
             inputEdit.requestFocus()
             return null
         }
-        if (normalized != raw) {
+        
+        // 如果是计算表达式，显示计算结果
+        if (hasOperators) {
             inputEdit.setText(num.toString())
             inputEdit.setSelection(inputEdit.text?.length ?: 0)
+            Toast.makeText(this, "计算结果: $num", Toast.LENGTH_SHORT).show()
         }
+        
         val MAX_INPUT = 100_000
         if (num > MAX_INPUT) {
             Toast.makeText(this, "输入过大，已限制为 $MAX_INPUT", Toast.LENGTH_SHORT).show()
@@ -194,6 +262,7 @@ class TodayCountActivity : AppCompatActivity() {
             inputEdit.setSelection(inputEdit.text?.length ?: 0)
             return MAX_INPUT
         }
+        
         return num
     }
 
@@ -234,6 +303,7 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun saveTodayCountAndEntry(prev: Int, type: String, inputVal: Int, finalCount: Int) {
+        val endTime = System.currentTimeMillis()
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getInstance(this@TodayCountActivity)
             db.jumpRecordDao().insertRecord(JumpRecord(todayStr, finalCount))
@@ -244,9 +314,14 @@ class TodayCountActivity : AppCompatActivity() {
                     type = type,
                     value = inputVal,
                     totalAfter = finalCount,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = endTime,
+                    startTime = inputStartTime,
+                    endTime = endTime
                 )
             )
+            
+            // 记录跳绳数据并启动提醒计时器（如果需要）
+            ReminderService.recordJump(this@TodayCountActivity)
             todayCount = finalCount
             val updatedList = db.jumpEntryDao().getEntriesByDate(todayStr)
             val limited = if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
