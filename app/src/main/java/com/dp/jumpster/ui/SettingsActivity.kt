@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
                 val lastJumpTime = ReminderService.getLastJumpTime(this)
                 if (lastJumpTime > 0) {
                     val timeAgo = (System.currentTimeMillis() - lastJumpTime) / 1000 / 60 // 分钟
-                    val message = "提醒已开启，最后一次跳绳记录于$timeAgo分钟前"
+                    val message = "提醒已开启，最后一次跳绳记录于$timeAgo 分钟前"
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "提醒已开启，每10分钟提醒一次", Toast.LENGTH_SHORT).show()
