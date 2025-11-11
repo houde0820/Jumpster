@@ -37,7 +37,7 @@ class ReminderService : Service() {
     private lateinit var prefs: SharedPreferences
     
     // 提醒间隔时间（毫秒）
-    private val reminderInterval = TimeUnit.MINUTES.toMillis(10)
+    private val reminderInterval = TimeUnit.MINUTES.toMillis(15)
     
     // 是否已经启动计时器
     private var timerStarted = false
@@ -100,8 +100,8 @@ class ReminderService : Service() {
         // 创建Handler
         handler = Handler(Looper.getMainLooper())
 
-        // 获取唤醒锁
-        wakeLock?.acquire(24 * 60 * 60 * 1000L) // 24小时最大值
+        // 获取唤醒锁，使用合理的超时时间
+        wakeLock?.acquire(30 * 60 * 1000L) // 30分钟，足够用户操作
         
         // 保存提醒状态
         prefs.edit().putBoolean(KEY_REMINDER_ACTIVE, true).apply()

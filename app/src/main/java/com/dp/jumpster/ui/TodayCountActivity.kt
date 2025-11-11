@@ -57,9 +57,13 @@ class TodayCountActivity : AppCompatActivity() {
 
     // 记录开始时间
     private var inputStartTime: Long = 0
-    
+    private lateinit var db: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 初始化数据库实例，避免重复创建
+        db = AppDatabase.getInstance(this)
         setContentView(R.layout.activity_today_count)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -118,7 +122,8 @@ class TodayCountActivity : AppCompatActivity() {
             vibrateClick(it)
             onCoverClick()
         }
-        
+
+
         // 如果提醒已开启，显示提醒状态
         if (ReminderService.isReminderActive(this)) {
             showReminderStatus()
@@ -181,8 +186,7 @@ class TodayCountActivity : AppCompatActivity() {
 
     private fun refreshTodayCount() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val dao = AppDatabase.getInstance(this@TodayCountActivity).jumpRecordDao()
-            val record = dao.getRecordByDate(todayStr)
+            val record = db.jumpRecordDao().getRecordByDate(todayStr)
             todayCount = record?.count ?: 0
             launch(Dispatchers.Main) {
                 countText.text = "今日累计：$todayCount"
@@ -192,8 +196,7 @@ class TodayCountActivity : AppCompatActivity() {
 
     private fun refreshTodayEntries() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val dao = AppDatabase.getInstance(this@TodayCountActivity).jumpEntryDao()
-            val list = dao.getEntriesByDate(todayStr)
+            val list = db.jumpEntryDao().getEntriesByDate(todayStr)
             val limited = if (list.size > 10) list.subList(0, 10) else list
             launch(Dispatchers.Main) { adapter.submitList(ArrayList(limited)) }
         }
@@ -216,7 +219,7 @@ class TodayCountActivity : AppCompatActivity() {
     private fun parseAndValidateInput(): Int? {
         val raw = inputEdit.text?.toString()?.trim() ?: ""
         if (raw.isEmpty()) {
-            inputEdit.error = "请输入数字"
+            inputEdit.error = "请输入跳绳次数"
             inputEdit.requestFocus()
             return null
         }
@@ -228,8 +231,8 @@ class TodayCountActivity : AppCompatActivity() {
             // 使用计算器解析表达式
             SimpleCalculator.calculate(raw)
         } else {
-            // 处理前导零
-            val normalized = raw.trimStart('0').ifEmpty { "0" }
+            // 处理前导零 - 更安全的处理方式
+            val normalized = normalizeNumberString(raw)
             val parsedNum = normalized.toIntOrNull()
             
             // 更新输入框内容，移除前导零
@@ -243,13 +246,13 @@ class TodayCountActivity : AppCompatActivity() {
         
         // 验证结果
         if (num == null) {
-            inputEdit.error = "表达式格式不正确"
+            inputEdit.error = if (hasOperators) "表达式格式不正确" else "请输入有效数字"
             inputEdit.requestFocus()
             return null
         }
         
         if (num <= 0) {
-            inputEdit.error = "结果必须大于0"
+            inputEdit.error = "跳绳次数必须大于0"
             inputEdit.requestFocus()
             return null
         }
@@ -272,6 +275,21 @@ class TodayCountActivity : AppCompatActivity() {
         return num
     }
 
+    /**
+     * 安全地标准化数字字符串，正确处理前导零
+     */
+    private fun normalizeNumberString(input: String): String {
+        val trimmed = input.trim()
+        if (trimmed.isEmpty()) return "0"
+
+        // 如果全是0，返回单个0
+        if (trimmed.all { it == '0' }) return "0"
+
+        // 移除前导零，但至少保留一个数字
+        val normalized = trimmed.dropWhile { it == '0' }
+        return if (normalized.isEmpty()) "0" else normalized
+    }
+
     private fun validateTotal(total: Int): Boolean {
         val MAX_TOTAL = 1_000_000
         if (total > MAX_TOTAL) {
@@ -283,7 +301,6 @@ class TodayCountActivity : AppCompatActivity() {
 
     private fun onUndoLatest() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getInstance(this@TodayCountActivity)
             val entryDao = db.jumpEntryDao()
             val latest = entryDao.getLatestByDate(todayStr) ?: run {
                 launch(Dispatchers.Main) {
@@ -320,7 +337,6 @@ class TodayCountActivity : AppCompatActivity() {
     private fun saveTodayCountAndEntry(prev: Int, type: String, inputVal: Int, finalCount: Int) {
         val endTime = System.currentTimeMillis()
         lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getInstance(this@TodayCountActivity)
             db.jumpRecordDao().insertRecord(JumpRecord(todayStr, finalCount))
             val newId = db.jumpEntryDao().insert(
                 JumpEntry(
@@ -378,7 +394,10 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun vibrateClick(view: View) {
+        // 优先使用系统触觉反馈（无需权限）
         view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+
+        // 作为备选，使用振动反馈（如果权限允许）
         try {
             val vibrator = if (Build.VERSION.SDK_INT >= 31) {
                 val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -387,14 +406,16 @@ class TodayCountActivity : AppCompatActivity() {
                 @Suppress("DEPRECATION")
                 getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
-            if (!vibrator.hasVibrator()) return
-            if (Build.VERSION.SDK_INT >= 26) {
-                vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(20)
+            if (vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= 26) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(15, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(15)
+                }
             }
         } catch (_: SecurityException) {
+            // 无权限时忽略，系统触觉反馈已足够
         }
     }
 
