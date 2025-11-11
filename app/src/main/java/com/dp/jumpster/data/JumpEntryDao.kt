@@ -19,6 +19,9 @@ interface JumpEntryDao {
     @Query("SELECT totalAfter FROM jump_entry WHERE date = :date ORDER BY timestamp DESC, id DESC LIMIT 1 OFFSET 1")
     suspend fun getPrevTotalAfter(date: String): Int?
 
+    @Query("SELECT totalAfter FROM jump_entry WHERE date = :date ORDER BY timestamp DESC, id DESC LIMIT 1")
+    suspend fun getLatestTotalAfter(date: String): Int?
+
     @Query("DELETE FROM jump_entry WHERE id = :id")
     suspend fun deleteById(id: Long)
 }

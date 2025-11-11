@@ -141,12 +141,9 @@ class ShareCardGenerator(private val context: Context) {
      * 格式化日期文本
      */
     private fun formatDateText(dateStr: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault())
-        
         return try {
-            val date = inputFormat.parse(dateStr) ?: return dateStr
-            outputFormat.format(date)
+            val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr) ?: return dateStr
+            SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault()).format(date)
         } catch (e: Exception) {
             dateStr
         }
@@ -156,12 +153,9 @@ class ShareCardGenerator(private val context: Context) {
      * 格式化月份文本
      */
     private fun formatMonthText(monthStr: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy年MM月", Locale.getDefault())
-        
         return try {
-            val date = inputFormat.parse(monthStr) ?: return monthStr
-            outputFormat.format(date)
+            val date = SimpleDateFormat("yyyy-MM", Locale.getDefault()).parse(monthStr) ?: return monthStr
+            SimpleDateFormat("yyyy年MM月", Locale.getDefault()).format(date)
         } catch (e: Exception) {
             monthStr
         }

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
  */
 class ReminderService : Service() {
     
-    private val handler = Handler(Looper.getMainLooper())
+    private var handler: Handler? = null
     private var mediaPlayer: MediaPlayer? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private lateinit var prefs: SharedPreferences
@@ -81,6 +81,8 @@ class ReminderService : Service() {
     
     override fun onDestroy() {
         stopReminder()
+        // 清理Handler引用
+        handler = null
         super.onDestroy()
     }
     
@@ -95,6 +97,9 @@ class ReminderService : Service() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
         
+        // 创建Handler
+        handler = Handler(Looper.getMainLooper())
+
         // 获取唤醒锁
         wakeLock?.acquire(24 * 60 * 60 * 1000L) // 24小时最大值
         
@@ -109,7 +114,7 @@ class ReminderService : Service() {
      */
     private fun stopReminder() {
         // 移除所有待处理的提醒
-        handler.removeCallbacks(reminderRunnable)
+        handler?.removeCallbacks(reminderRunnable)
         
         // 释放媒体播放器资源
         mediaPlayer?.release()
@@ -138,7 +143,7 @@ class ReminderService : Service() {
      * 安排下一次提醒
      */
     private fun scheduleNextReminder() {
-        handler.postDelayed(reminderRunnable, reminderInterval)
+        handler?.postDelayed(reminderRunnable, reminderInterval)
     }
     
     /**

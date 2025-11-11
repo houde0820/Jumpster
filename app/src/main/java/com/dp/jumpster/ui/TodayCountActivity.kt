@@ -35,6 +35,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class TodayCountActivity : AppCompatActivity() {
     private lateinit var countText: TextView
@@ -46,8 +48,12 @@ class TodayCountActivity : AppCompatActivity() {
     private val adapter = TodayEntryAdapter()
 
     private var todayCount = 0
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val dateLock = ReentrantLock()
     private val todayStr: String
-        get() = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        get() = dateLock.withLock {
+            dateFormatter.format(Date())
+        }
 
     // 记录开始时间
     private var inputStartTime: Long = 0
@@ -285,7 +291,16 @@ class TodayCountActivity : AppCompatActivity() {
                 }
                 return@launch
             }
-            val prevTotal = entryDao.getPrevTotalAfter(todayStr) ?: 0
+
+            // 安全地获取前一个total值：如果有多个记录则获取前一个，否则重置为0
+            val entries = entryDao.getEntriesByDate(todayStr)
+            val prevTotal = if (entries.size > 1) {
+                val prevEntry = entries[1] // 第二个最新的记录
+                prevEntry.totalAfter
+            } else {
+                0 // 只有一条记录时，撤销后重置为0
+            }
+
             db.jumpRecordDao().insertRecord(JumpRecord(todayStr, prevTotal))
             entryDao.deleteById(latest.id)
             todayCount = prevTotal

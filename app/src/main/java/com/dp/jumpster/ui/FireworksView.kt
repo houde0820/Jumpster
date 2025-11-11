@@ -31,13 +31,29 @@ class FireworksView @JvmOverloads constructor(
     private var centerX: Float? = null
     private var centerY: Float? = null
 
-    fun startSmall() { startInternal(null, null, 40, 8f, 900L) }
-    fun startBig() { startInternal(null, null, 140, 12f, 1500L) }
+    fun startSmall() {
+        startInternal(null, null, 40, 8f, 900L)
+    }
 
-    fun startSmallAt(cx: Float, cy: Float) { startInternal(cx, cy, 40, 8f, 900L) }
-    fun startBigAt(cx: Float, cy: Float) { startInternal(cx, cy, 140, 12f, 1500L) }
+    fun startBig() {
+        startInternal(null, null, 140, 12f, 1500L)
+    }
 
-    private fun startInternal(cx: Float?, cy: Float?, particleCount: Int, maxRadius: Float, duration: Long) {
+    fun startSmallAt(cx: Float, cy: Float) {
+        startInternal(cx, cy, 40, 8f, 900L)
+    }
+
+    fun startBigAt(cx: Float, cy: Float) {
+        startInternal(cx, cy, 140, 12f, 1500L)
+    }
+
+    private fun startInternal(
+        cx: Float?,
+        cy: Float?,
+        particleCount: Int,
+        maxRadius: Float,
+        duration: Long
+    ) {
         animator?.cancel()
         centerX = cx
         centerY = cy
@@ -67,6 +83,7 @@ class FireworksView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         animator?.cancel()
+        animator = null
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -85,7 +102,12 @@ class FireworksView @JvmOverloads constructor(
     }
 
     private fun buildParticles(count: Int, maxRadius: Float): List<Particle> {
-        val colors = intArrayOf(0xFF00C853.toInt(), 0xFFFF6D00.toInt(), 0xFFBB86FC.toInt(), 0xFF03A9F4.toInt())
+        val colors = intArrayOf(
+            0xFF00C853.toInt(),
+            0xFFFF6D00.toInt(),
+            0xFFBB86FC.toInt(),
+            0xFF03A9F4.toInt()
+        )
         val list = ArrayList<Particle>(count)
         val rand = Random(System.currentTimeMillis())
         repeat(count) {
@@ -103,6 +125,12 @@ class FireworksView @JvmOverloads constructor(
 private fun ValueAnimator.doOnEnd(block: () -> Unit) {
     addListener(object : android.animation.AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: android.animation.Animator) {
+            // 使用post确保在主线程执行清理
+            block()
+        }
+
+        override fun onAnimationCancel(animation: android.animation.Animator) {
+            // 动画被取消时也要执行清理
             block()
         }
     })
