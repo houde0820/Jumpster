@@ -335,6 +335,10 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun saveTodayCountAndEntry(prev: Int, type: String, inputVal: Int, finalCount: Int) {
+        // 立即更新内存中的计数，防止快速点击导致的竞态条件
+        todayCount = finalCount
+        countText.text = "今日累计：$todayCount"
+        
         val endTime = System.currentTimeMillis()
         lifecycleScope.launch(Dispatchers.IO) {
             db.jumpRecordDao().insertRecord(JumpRecord(todayStr, finalCount))
@@ -353,11 +357,11 @@ class TodayCountActivity : AppCompatActivity() {
             
             // 记录跳绳数据并启动提醒计时器（如果需要）
             ReminderService.recordJump(this@TodayCountActivity)
-            todayCount = finalCount
+            
             val updatedList = db.jumpEntryDao().getEntriesByDate(todayStr)
             val limited = if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
             launch(Dispatchers.Main) {
-                countText.text = "今日累计：$todayCount"
+                // countText.text 已在前面更新
                 inputEdit.setText("")
                 animateCount()
                 maybeCelebrate(prev, finalCount)

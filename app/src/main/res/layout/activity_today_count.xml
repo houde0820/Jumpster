@@ -9,20 +9,25 @@
         android:id="@+id/content_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="20dp"
+        android:background="@drawable/sport_gradient_bg"
+        android:paddingTop="32dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/sport_primary"
+            android:elevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="今日跳绳"
+            app:title="跳绳计数器"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.JS.Title"
-            app:titleTextColor="@color/sport_on_primary" />
+            app:titleTextColor="@color/sport_on_primary"
+            app:navigationIcon="@drawable/ic_jump_rope"
+            app:navigationIconTint="@color/sport_on_primary" />
 
         <TextView
             android:id="@+id/text_today_date"
@@ -30,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="2025-10-30"
-            android:textColor="#777"
+            android:textColor="@color/sport_text_secondary"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,9 +45,10 @@
             android:id="@+id/card_total"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="3dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:backgroundTint="@color/sport_card_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_today_date">
@@ -51,20 +57,21 @@
                 android:id="@+id/text_count_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:padding="20dp"
+                android:padding="24dp"
                 android:text="今日累计：0"
-                android:textColor="#111"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textColor="@color/sport_text_primary"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:minHeight="80dp" />
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_input"
+            android:id="@id/til_input"
             style="@style/Widget.JS.TextInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toStartOf="@+id/btn_undo"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +106,7 @@
             android:id="@+id/row_buttons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,10 +121,10 @@
                 android:text="追加"
                 android:textColor="@color/sport_on_primary"
                 app:backgroundTint="@color/sport_primary"
-                app:cornerRadius="20dp" />
+                app:cornerRadius="24dp" />
 
             <Space
-                android:layout_width="8dp"
+                android:layout_width="16dp"
                 android:layout_height="0dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -128,7 +135,7 @@
                 android:layout_weight="1"
                 android:text="覆盖"
                 android:textColor="@color/sport_secondary"
-                app:cornerRadius="20dp"
+                app:cornerRadius="24dp"
                 app:strokeColor="@color/sport_secondary"
                 app:strokeWidth="2dp" />
         </LinearLayout>
@@ -137,10 +144,10 @@
             android:id="@+id/text_today_history_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="本日操作记录"
-            android:textColor="#333"
-            android:textSize="15sp"
+            android:layout_marginTop="24dp"
+            android:text="跳绳记录"
+            android:textColor="@color/sport_text_primary"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -151,7 +158,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layoutAnimation="@anim/layout_fall_down"
-            android:paddingTop="4dp"
+            android:paddingTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -162,7 +169,7 @@
     <com.dp.jumpster.ui.FireworksView
         android:id="@+id/fireworks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
 </FrameLayout>
