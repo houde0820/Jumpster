@@ -61,6 +61,8 @@ class TodayCountActivity : AppCompatActivity() {
     private var inputStartTime: Long = 0
     private lateinit var db: AppDatabase
 
+    private var loadedDate: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -109,17 +111,14 @@ class TodayCountActivity : AppCompatActivity() {
         adapter.onItemClickListener = object : TodayEntryAdapter.OnItemClickListener {
             override fun onItemClick(entry: JumpEntry) {
                 val i = Intent(this@TodayCountActivity, DayEntriesActivity::class.java)
-                i.putExtra("date", todayStr)
+                i.putExtra("date", loadedDate)
                 startActivity(i)
             }
         }
 
-        refreshTodayCount()
-        refreshTodayEntries()
         addButton.setOnClickListener {
             vibrateClick(it)
             onAddClick()
-            Toast.makeText(this@TodayCountActivity, "111", Toast.LENGTH_SHORT).show()
         }
         coverButton.setOnClickListener {
             vibrateClick(it)
@@ -133,6 +132,25 @@ class TodayCountActivity : AppCompatActivity() {
         }
 
         checkRealDisplayMetrics()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadData()
+    }
+
+    private fun loadData() {
+        val currentToday = todayStr
+        // 如果日期变更了，或者这是第一次加载
+        if (loadedDate != currentToday) {
+            loadedDate = currentToday
+            refreshTodayCount()
+            refreshTodayEntries()
+        } else {
+            // 日期没变，但也刷新一下数据，以防在其他页面（如详情页删除）修改了数据
+            refreshTodayCount()
+            refreshTodayEntries()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -164,7 +182,7 @@ class TodayCountActivity : AppCompatActivity() {
     
     private fun shareToday() {
         if (todayCount > 0) {
-            ShareCardGenerator(this).shareToday(todayCount, todayStr)
+            ShareCardGenerator(this).shareToday(todayCount, loadedDate)
         } else {
             Toast.makeText(this, getString(R.string.msg_no_records_today), Toast.LENGTH_SHORT).show()
         }
@@ -176,7 +194,6 @@ class TodayCountActivity : AppCompatActivity() {
     private fun showReminderStatus() {
         val isActive = ReminderService.isReminderActive(this)
         val isTimerStarted = ReminderService.isTimerStarted(this)
-        val lastJumpTime = ReminderService.getLastJumpTime(this)
         
         if (isActive) {
             if (isTimerStarted) {
@@ -190,24 +207,40 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun refreshTodayCount() {
+        val dateToLoad = loadedDate
         lifecycleScope.launch(Dispatchers.IO) {
-            val record = db.jumpRecordDao().getRecordByDate(todayStr)
+            val record = db.jumpRecordDao().getRecordByDate(dateToLoad)
             todayCount = record?.count ?: 0
             launch(Dispatchers.Main) {
-                countText.text = getString(R.string.fmt_today_total, todayCount)
+                // 再次确认日期，防止异步回调时日期已变
+                if (loadedDate == dateToLoad) {
+                    countText.text = getString(R.string.fmt_today_total, todayCount)
+                }
             }
         }
     }
 
     private fun refreshTodayEntries() {
+        val dateToLoad = loadedDate
         lifecycleScope.launch(Dispatchers.IO) {
-            val list = db.jumpEntryDao().getEntriesByDate(todayStr)
+            val list = db.jumpEntryDao().getEntriesByDate(dateToLoad)
             val limited = if (list.size > 10) list.subList(0, 10) else list
-            launch(Dispatchers.Main) { adapter.submitList(ArrayList(limited)) }
+            launch(Dispatchers.Main) {
+                if (loadedDate == dateToLoad) {
+                    adapter.submitList(ArrayList(limited))
+                }
+            }
         }
     }
 
     private fun onAddClick() {
+        // 检查日期是否变更
+        if (loadedDate != todayStr) {
+            loadData()
+            Toast.makeText(this, "日期已变更，数据已刷新", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val parsed = parseAndValidateInput() ?: return
         val addVal = parsed
         val newCount = todayCount + addVal
@@ -216,6 +249,13 @@ class TodayCountActivity : AppCompatActivity() {
     }
 
     private fun onCoverClick() {
+        // 检查日期是否变更
+        if (loadedDate != todayStr) {
+            loadData()
+            Toast.makeText(this, "日期已变更，数据已刷新", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val coverVal = parseAndValidateInput() ?: return
         if (!validateTotal(coverVal)) return
         saveTodayCountAndEntry(prev = todayCount, type = "cover", inputVal = coverVal, finalCount = coverVal)

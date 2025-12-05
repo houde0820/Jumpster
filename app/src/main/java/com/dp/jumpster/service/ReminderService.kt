@@ -201,10 +201,18 @@ class ReminderService : Service() {
     /**
      * 播放提醒音效
      */
+    /**
+     * 播放提醒音效
+     */
     private fun playReminderSound() {
         try {
+            // 如果正在播放，先停止
+            if (mediaPlayer?.isPlaying == true) {
+                mediaPlayer?.stop()
+            }
             // 释放之前的媒体播放器资源
             mediaPlayer?.release()
+            mediaPlayer = null
             
             // 创建新的媒体播放器
             val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -215,7 +223,10 @@ class ReminderService : Service() {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .build()
                 )
-                setOnCompletionListener { it.release() }
+                setOnCompletionListener { 
+                    it.release()
+                    mediaPlayer = null
+                }
                 start()
             }
         } catch (e: Exception) {
