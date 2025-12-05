@@ -1,16 +1,21 @@
 package com.dp.jumpster.ui
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import com.dp.jumpster.R
 import com.dp.jumpster.service.ReminderService
+import com.dp.jumpster.util.DataExportHelper
 import com.google.android.material.switchmaterial.SwitchMaterial
+import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var reminderSwitch: SwitchMaterial
+    private lateinit var btnExportData: Button
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +23,7 @@ class SettingsActivity : AppCompatActivity() {
         
         toolbar = findViewById(R.id.toolbar)
         reminderSwitch = findViewById(R.id.switch_reminder)
+        btnExportData = findViewById(R.id.btn_export_data)
         
         // 设置工具栏
         setSupportActionBar(toolbar)
@@ -42,6 +48,14 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 ReminderService.stopReminder(this)
                 Toast.makeText(this, "已关闭提醒", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        // 数据导出按钮
+        btnExportData.setOnClickListener {
+            lifecycleScope.launch {
+                val exporter = DataExportHelper(this@SettingsActivity)
+                exporter.exportAndShare()
             }
         }
         

@@ -1,8 +1,11 @@
 package com.dp.jumpster.ui
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -30,6 +33,16 @@ class DayEntriesActivity : AppCompatActivity() {
     private lateinit var rv: RecyclerView
     private lateinit var lineChart: LineChart
     private val adapter = TodayEntryAdapter()
+    private var currentDate: String = ""
+
+    private val detailLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // 数据被修改，重新加载
+            loadData(currentDate)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,17 +59,29 @@ class DayEntriesActivity : AppCompatActivity() {
         rv.adapter = adapter
         (rv.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-        val date = intent.getStringExtra("date") ?: ""
-        titleText.text = "$date 记录"
+        currentDate = intent.getStringExtra("date") ?: ""
+        titleText.text = "$currentDate 记录"
 
         adapter.onItemClickListener = object : TodayEntryAdapter.OnItemClickListener {
             override fun onItemClick(entry: JumpEntry) {
-                EntryDetailActivity.start(this@DayEntriesActivity, entry)
+                val intent = Intent(this@DayEntriesActivity, EntryDetailActivity::class.java)
+                intent.putExtra("id", entry.id)
+                intent.putExtra("date", entry.date)
+                intent.putExtra("type", entry.type)
+                intent.putExtra("value", entry.value)
+                intent.putExtra("totalAfter", entry.totalAfter)
+                intent.putExtra("timestamp", entry.timestamp)
+                detailLauncher.launch(intent)
             }
         }
 
         setupChart()
-        loadData(date)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 每次返回都刷新数据
+        loadData(currentDate)
     }
     
     private fun setupChart() {

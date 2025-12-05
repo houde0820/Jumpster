@@ -16,4 +16,7 @@ interface JumpRecordDao {
 
     @Query("SELECT * FROM jump_record WHERE date BETWEEN :startDate AND :endDate")
     suspend fun getRecordsBetween(startDate: String, endDate: String): List<JumpRecord>
+    
+    @androidx.room.Delete
+    suspend fun delete(record: JumpRecord)
 }

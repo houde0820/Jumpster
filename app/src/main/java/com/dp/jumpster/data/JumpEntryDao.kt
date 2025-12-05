@@ -24,4 +24,10 @@ interface JumpEntryDao {
 
     @Query("DELETE FROM jump_entry WHERE id = :id")
     suspend fun deleteById(id: Long)
+    
+    @Query("SELECT * FROM jump_entry WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): JumpEntry?
+    
+    @androidx.room.Update
+    suspend fun update(entry: JumpEntry)
 }
