@@ -30,11 +30,11 @@ class ShareCardGenerator(private val context: Context) {
      */
     fun shareToday(count: Int, date: String) {
         val view = generateShareCardView(
-            title = "今日成绩",
+            title = context.getString(R.string.share_title_today),
             dateText = formatDateText(date),
             count = count
         )
-        shareCardView(view, "今日跳绳成绩")
+        shareCardView(view, context.getString(R.string.share_subject_today))
     }
 
     /**
@@ -44,11 +44,11 @@ class ShareCardGenerator(private val context: Context) {
      */
     fun shareMonth(count: Int, monthStr: String) {
         val view = generateShareCardView(
-            title = "本月成绩",
+            title = context.getString(R.string.share_title_month),
             dateText = formatMonthText(monthStr),
             count = count
         )
-        shareCardView(view, "本月跳绳成绩")
+        shareCardView(view, context.getString(R.string.share_subject_month))
     }
 
     /**
@@ -128,13 +128,14 @@ class ShareCardGenerator(private val context: Context) {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, contentUri)
             putExtra(Intent.EXTRA_SUBJECT, title)
-            putExtra(Intent.EXTRA_TEXT, "我的${title}：${view.findViewById<TextView>(R.id.text_count_value).text} 次！")
+            val countText = view.findViewById<TextView>(R.id.text_count_value).text
+            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text_template, title, countText))
             type = "image/png"
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         
         // 启动分享 Intent
-        context.startActivity(Intent.createChooser(shareIntent, "分享到"))
+        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_chooser_title)))
     }
 
     /**
@@ -143,7 +144,7 @@ class ShareCardGenerator(private val context: Context) {
     private fun formatDateText(dateStr: String): String {
         return try {
             val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr) ?: return dateStr
-            SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault()).format(date)
+            SimpleDateFormat(context.getString(R.string.fmt_date_long), Locale.getDefault()).format(date)
         } catch (e: Exception) {
             dateStr
         }
@@ -155,7 +156,7 @@ class ShareCardGenerator(private val context: Context) {
     private fun formatMonthText(monthStr: String): String {
         return try {
             val date = SimpleDateFormat("yyyy-MM", Locale.getDefault()).parse(monthStr) ?: return monthStr
-            SimpleDateFormat("yyyy年MM月", Locale.getDefault()).format(date)
+            SimpleDateFormat(context.getString(R.string.fmt_month_long), Locale.getDefault()).format(date)
         } catch (e: Exception) {
             monthStr
         }

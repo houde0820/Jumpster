@@ -13,7 +13,9 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
 import android.os.VibrationEffect
@@ -178,7 +180,9 @@ class ReminderService : Service() {
             // 如果计时器未启动，标记为启动
             if (!prefs.getBoolean(KEY_TIMER_STARTED, false)) {
                 prefs.edit().putBoolean(KEY_TIMER_STARTED, true).apply()
-                Toast.makeText(this, "已启动跳绳提醒计时器", Toast.LENGTH_SHORT).show()
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(applicationContext, applicationContext.getString(R.string.msg_timer_started), Toast.LENGTH_SHORT).show()
+                }
             }
             // 重新安排下一次提醒（重置计时）
             scheduleNextReminder()
@@ -255,41 +259,33 @@ class ReminderService : Service() {
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                getString(R.string.app_name),
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "跳绳提醒服务"
-                setShowBadge(false)
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.notif_text)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
             }
-            
-            val notificationManager = getSystemService(NotificationManager::class.java)
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
-    
-    /**
-     * 创建前台服务通知
-     */
+
     private fun createNotification(): Notification {
         val intent = Intent(this, TodayCountActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE
         )
-        
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("跳绳提醒")
-            .setContentText("每10分钟提醒一次")
-            .setSmallIcon(R.drawable.ic_trend)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(getString(R.string.notif_title))
+            .setContentText(getString(R.string.notif_text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setAutoCancel(true)
             .build()
     }
     

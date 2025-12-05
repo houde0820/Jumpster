@@ -1,32 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Typography -->
     <style name="TextAppearance.JS.Title" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/sport_on_primary</item>
+        <item name="android:textColor">@color/sport_on_background</item>
+    </style>
+    
+    <style name="TextAppearance.JS.BigNumber" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/sport_primary</item>
+        <item name="android:textSize">60sp</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+    </style>
+    
+    <style name="TextAppearance.JS.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/sport_text_secondary</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
+    <!-- Shapes -->
     <style name="ShapeAppearance.JS.Rounded2" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
     <style name="ShapeAppearance.JS.Rounded" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+    
+    <style name="ShapeAppearance.JS.Card" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
     </style>
 
+    <!-- Widgets -->
     <style name="Widget.JS.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="boxStrokeColor">@color/sport_primary</item>
+        <item name="hintTextColor">@color/sport_primary</item>
     </style>
 
     <style name="Widget.JS.InputButton" parent="Widget.Material3.Button">
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded2</item>
+        <item name="android:textColor">@color/sport_on_primary</item>
+        <item name="backgroundTint">@color/sport_primary</item>
     </style>
+    
     <style name="Widget.JS.Button" parent="Widget.Material3.Button">
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="android:textColor">@color/sport_on_primary</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Widget.JS.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="shapeAppearance">@style/ShapeAppearance.JS.Rounded</item>
+        <item name="android:textColor">@color/sport_primary</item>
+        <item name="strokeColor">@color/sport_primary</item>
+    </style>
+    
+    <style name="Widget.JS.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="shapeAppearance">@style/ShapeAppearance.JS.Card</item>
+        <item name="cardBackgroundColor">@color/sport_surface</item>
+        <item name="cardElevation">4dp</item>
     </style>
 </resources>

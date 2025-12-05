@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">Jumpster</string>
+
+    <!-- TodayCountActivity -->
+    <string name="title_today_count">JUMPSTER</string>
+    <string name="label_todays_count">今日计数</string>
+    <string name="hint_enter_jumps">输入次数</string>
+    <string name="btn_undo">撤销</string>
+    <string name="btn_add">追加</string>
+    <string name="btn_set">覆盖</string>
+    <string name="label_history">历史记录</string>
+    <string name="msg_no_records_today">今日还没有记录哦</string>
+    <string name="msg_reminder_active_interval">提醒已开启，每10分钟提醒一次</string>
+    <string name="msg_reminder_active_first">提醒已开启，待记录第一次跳绳数据后开始计时</string>
+    <string name="fmt_today_total">今日累计：%d</string>
+    <string name="error_enter_jumps">请输入跳绳次数</string>
+    <string name="error_invalid_format">表达式格式不正确</string>
+    <string name="error_invalid_number">请输入有效数字</string>
+    <string name="error_must_be_positive">跳绳次数必须大于0</string>
+    <string name="msg_calc_result">计算结果: %d</string>
+    <string name="msg_input_too_large">输入过大，已限制为 %d</string>
+    <string name="msg_total_too_large">累计过大，最大支持 %d</string>
+    <string name="msg_no_undo">无可撤销记录</string>
+    <string name="msg_undo_success">已撤销最近一次操作</string>
+
+    <!-- SettingsActivity -->
+    <string name="title_settings">设置</string>
+    <string name="label_reminders">提醒设置</string>
+    <string name="label_interval_reminder">间隔提醒</string>
+    <string name="label_remind_every_10_mins">每10分钟提醒一次</string>
+    <string name="label_about">关于</string>
+    <string name="label_version">版本 1.0</string>
+
+    <!-- TrendChartActivity -->
+    <string name="title_trends">趋势图</string>
+    <string name="tab_weekly">周视图</string>
+    <string name="tab_monthly">月视图</string>
+    <string name="tab_bar">柱状图</string>
+    <string name="tab_line">折线图</string>
+    <string name="msg_no_data">暂无数据</string>
+    <string name="title_trend_chart">跳绳趋势</string>
+    <string name="label_jump_count">跳绳次数</string>
+
+    <!-- MonthCalendarActivity -->
+    <string name="title_monthly_stats">月度统计</string>
+    <string name="label_month_stats">月度跳绳统计</string>
+    <string name="fmt_month_total">本月合计：%d</string>
+    <string name="fmt_week_total">本周合计：%d</string>
+    <string name="label_select_day">选择某一天查看累计</string>
+    <string name="fmt_month_title">%s 跳绳统计</string>
+    <string name="msg_no_month_records">本月还没有记录哦</string>
+    <string name="fmt_selected_day_info">%s：累计 %d</string>
+
+    <!-- DayEntriesActivity -->
+    <string name="title_daily_record">每日记录</string>
+    <string name="fmt_day_record_title">%s 记录</string>
+    <string name="title_daily_trend">当日跳绳趋势</string>
+    <string name="label_details">详细记录</string>
+    <string name="msg_no_data_chart">暂无数据</string>
+    <string name="label_cumulative">累计数</string>
+
+    <!-- TodayEntryAdapter -->
+    <string name="label_type_add">追加</string>
+    <string name="label_type_set">覆盖</string>
+    <string name="fmt_time_duration">%s | 用时 %s | 累计 %d</string>
+    <string name="fmt_time_total">%s | 累计 %d</string>
+    <string name="unit_sec">秒</string>
+    <string name="unit_jumps">次</string>
+    <string name="fmt_min_sec">%d分%d秒</string>
+    <string name="fmt_add_value">+%d</string>
+    <string name="fmt_cover_value">→ %d</string>
+    <string name="fmt_duration_sec">%d秒</string>
+    <string name="fmt_duration_min_sec">%d分%d秒</string>
+    <string name="fmt_time_duration_total">%s | 用时 %s | 累计 %d</string>
+
+    <!-- Share -->
+    <string name="share_title_today">今日成绩</string>
+    <string name="share_subject_today">今日跳绳成绩</string>
+    <string name="share_title_month">本月成绩</string>
+    <string name="share_subject_month">本月跳绳成绩</string>
+    <string name="share_text_template">我的%s：%s 次！</string>
+    <string name="share_chooser_title">分享到</string>
+    <string name="fmt_date_long">yyyy年MM月dd日</string>
+    <string name="fmt_month_long">yyyy年MM月</string>
+
+    <!-- ReminderService -->
+    <string name="channel_name">跳绳提醒服务</string>
+    <string name="notif_title">跳绳提醒</string>
+    <string name="notif_text">每10分钟提醒一次</string>
+    <string name="msg_timer_started">已启动跳绳提醒计时器</string>
+
+    <!-- Week Days -->
+    <string name="week_day_mon">一</string>
+    <string name="week_day_tue">二</string>
+    <string name="week_day_wed">三</string>
+    <string name="week_day_thu">四</string>
+    <string name="week_day_fri">五</string>
+    <string name="week_day_sat">六</string>
+    <string name="week_day_sun">日</string>
+</resources>

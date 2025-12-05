@@ -1,3 +1,100 @@
 <resources>
     <string name="app_name">Jumpster</string>
+
+    <!-- TodayCountActivity -->
+    <string name="title_today_count">JUMPSTER</string>
+    <string name="label_todays_count">TODAY\'S COUNT</string>
+    <string name="hint_enter_jumps">ENTER JUMPS</string>
+    <string name="btn_undo">UNDO</string>
+    <string name="btn_add">ADD</string>
+    <string name="btn_set">SET</string>
+    <string name="label_history">HISTORY</string>
+    <string name="msg_no_records_today">No records today</string>
+    <string name="msg_reminder_active_interval">Reminder active, every 10 mins</string>
+    <string name="msg_reminder_active_first">Reminder active, waiting for first jump</string>
+    <string name="fmt_today_total">Today Total: %d</string>
+    <string name="error_enter_jumps">Please enter jumps</string>
+    <string name="error_invalid_format">Invalid format</string>
+    <string name="error_invalid_number">Invalid number</string>
+    <string name="error_must_be_positive">Must be > 0</string>
+    <string name="msg_calc_result">Result: %d</string>
+    <string name="msg_input_too_large">Input too large, limited to %d</string>
+    <string name="msg_total_too_large">Total too large, max %d</string>
+    <string name="msg_no_undo">Nothing to undo</string>
+    <string name="msg_undo_success">Undo successful</string>
+
+    <!-- SettingsActivity -->
+    <string name="title_settings">SETTINGS</string>
+    <string name="label_reminders">REMINDERS</string>
+    <string name="label_interval_reminder">Interval Reminder</string>
+    <string name="label_remind_every_10_mins">Remind every 10 mins</string>
+    <string name="label_about">ABOUT</string>
+    <string name="label_version">Version 1.0</string>
+
+    <!-- TrendChartActivity -->
+    <string name="title_trends">TRENDS</string>
+    <string name="tab_weekly">WEEKLY</string>
+    <string name="tab_monthly">MONTHLY</string>
+    <string name="tab_bar">BAR</string>
+    <string name="tab_line">LINE</string>
+    <string name="msg_no_data">NO DATA</string>
+    <string name="title_trend_chart">Jump Trends</string>
+    <string name="label_jump_count">Jump Count</string>
+
+    <!-- MonthCalendarActivity -->
+    <string name="title_monthly_stats">MONTHLY STATS</string>
+    <string name="label_month_stats">Month Statistics</string>
+    <string name="fmt_month_total">Month Total: %d</string>
+    <string name="fmt_week_total">Week Total: %d</string>
+    <string name="label_select_day">Select a day to view details</string>
+    <string name="fmt_month_title">%s Statistics</string>
+    <string name="msg_no_month_records">No records this month</string>
+    <string name="fmt_selected_day_info">%s: Total %d</string>
+
+    <!-- DayEntriesActivity -->
+    <string name="title_daily_record">DAILY RECORD</string>
+    <string name="fmt_day_record_title">%s Record</string>
+    <string name="title_daily_trend">Daily Trend</string>
+    <string name="label_details">DETAILS</string>
+    <string name="msg_no_data_chart">No Data</string>
+    <string name="label_cumulative">Cumulative</string>
+
+    <!-- TodayEntryAdapter -->
+    <string name="label_type_add">ADD</string>
+    <string name="label_type_set">SET</string>
+    <string name="fmt_time_duration">%s | Duration %s | Total %d</string>
+    <string name="fmt_time_total">%s | Total %d</string>
+    <string name="unit_sec">s</string>
+    <string name="unit_jumps">JUMPS</string>
+    <string name="fmt_min_sec">%dm %ds</string>
+    <string name="fmt_add_value">+%d</string>
+    <string name="fmt_cover_value">→ %d</string>
+    <string name="fmt_duration_sec">%ds</string>
+    <string name="fmt_duration_min_sec">%dm %ds</string>
+    <string name="fmt_time_duration_total">%s | Duration %s | Total %d</string>
+
+    <!-- Share -->
+    <string name="share_title_today">Today\'s Record</string>
+    <string name="share_subject_today">Today\'s Jump Record</string>
+    <string name="share_title_month">Month\'s Record</string>
+    <string name="share_subject_month">Month\'s Jump Record</string>
+    <string name="share_text_template">My %s: %s jumps!</string>
+    <string name="share_chooser_title">Share to</string>
+    <string name="fmt_date_long">yyyy-MM-dd</string>
+    <string name="fmt_month_long">yyyy-MM</string>
+
+    <!-- ReminderService -->
+    <string name="channel_name">Jump Reminder Service</string>
+    <string name="notif_title">Jump Reminder</string>
+    <string name="notif_text">Remind every 10 mins</string>
+    <string name="msg_timer_started">Timer started</string>
+
+    <!-- Week Days -->
+    <string name="week_day_mon">Mon</string>
+    <string name="week_day_tue">Tue</string>
+    <string name="week_day_wed">Wed</string>
+    <string name="week_day_thu">Thu</string>
+    <string name="week_day_fri">Fri</string>
+    <string name="week_day_sat">Sat</string>
+    <string name="week_day_sun">Sun</string>
 </resources>

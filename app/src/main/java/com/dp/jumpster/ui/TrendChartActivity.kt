@@ -83,12 +83,15 @@ class TrendChartActivity : AppCompatActivity() {
         with(lineChart) {
             description.isEnabled = false
             legend.isEnabled = true
+            legend.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
             setTouchEnabled(true)
             setScaleEnabled(true)
             setPinchZoom(true)
             setDrawGridBackground(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.granularity = 1f
+            xAxis.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
+            axisLeft.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
             axisRight.isEnabled = false
         }
 
@@ -96,12 +99,15 @@ class TrendChartActivity : AppCompatActivity() {
         with(barChart) {
             description.isEnabled = false
             legend.isEnabled = true
+            legend.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
             setTouchEnabled(true)
             setScaleEnabled(true)
             setPinchZoom(true)
             setDrawGridBackground(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.granularity = 1f
+            xAxis.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
+            axisLeft.textColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_text_secondary)
             axisRight.isEnabled = false
         }
     }
@@ -222,7 +228,7 @@ class TrendChartActivity : AppCompatActivity() {
     private fun updateBarChart(entries: List<BarEntry>, xLabels: List<String>) {
         val dataSet = BarDataSet(entries, "跳绳次数").apply {
             color = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_primary)
-            valueTextColor = Color.BLACK
+            valueTextColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_on_background)
             valueTextSize = 10f
         }
         
@@ -240,9 +246,9 @@ class TrendChartActivity : AppCompatActivity() {
     }
 
     private fun updateLineChart(entries: List<Entry>, xLabels: List<String>) {
-        val dataSet = LineDataSet(entries, "跳绳次数").apply {
+        val dataSet = LineDataSet(entries, getString(R.string.label_jump_count)).apply {
             color = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_primary)
-            valueTextColor = Color.BLACK
+            valueTextColor = ContextCompat.getColor(this@TrendChartActivity, R.color.sport_on_background)
             valueTextSize = 10f
             lineWidth = 2f
             setCircleColor(ContextCompat.getColor(this@TrendChartActivity, R.color.sport_primary))

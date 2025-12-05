@@ -1,19 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- 运动风格主色系 -->
-    <color name="sport_primary">#00C853</color> <!-- 绿色，活力 -->
-    <color name="sport_secondary">#FF6D00</color> <!-- 橙色，强调 -->
-    <color name="sport_surface">#F5F7F9</color>
-    <color name="sport_on_primary">#FFFFFFFF</color> <!-- 白色，确保在深色背景上可见 -->
-    <color name="sport_text_primary">#FF111111</color> <!-- 深灰色，主文本 -->
-    <color name="sport_text_secondary">#FF666666</color> <!-- 灰色，次要文本 -->
-    <color name="sport_card_bg">#FFFFFFFF</color> <!-- 卡片背景 -->
+    <!-- 运动风格主色系 (Light Mode) -->
+    <color name="sport_primary">#00C853</color> <!-- 深一点的绿色 -->
+    <color name="sport_primary_variant">#009624</color>
+    <color name="sport_secondary">#FF6D00</color> <!-- 深一点的橙色 -->
+    <color name="sport_secondary_variant">#C43C00</color>
+    
+    <!-- 背景色系 -->
+    <color name="sport_background">#F5F5F5</color> <!-- 浅灰背景 -->
+    <color name="sport_surface">#FFFFFF</color> <!-- 白色卡片 -->
+    <color name="sport_surface_light">#EEEEEE</color> <!-- 浅灰卡片 -->
+    
+    <!-- 文本颜色 -->
+    <color name="sport_on_primary">#FFFFFF</color> <!-- 绿底白字 -->
+    <color name="sport_on_secondary">#FFFFFF</color> <!-- 橙底白字 -->
+    <color name="sport_on_background">#212121</color> <!-- 深灰字 -->
+    <color name="sport_on_surface">#424242</color> <!-- 灰字 -->
+    <color name="sport_text_secondary">#757575</color> <!-- 次要文本 -->
+    
+    <!-- Aliases for compatibility -->
+    <color name="text_primary">@color/sport_on_background</color>
+    <color name="text_secondary">@color/sport_text_secondary</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="sport_card_background">@color/sport_surface</color>
+    
+    <!-- 功能色 -->
+    <color name="sport_error">#B00020</color>
+    <color name="sport_success">#00C853</color>
+
+    <!-- Gradient Colors -->
+    <color name="sport_bg_gradient_start">#FFFFFF</color>
+    <color name="sport_bg_gradient_center">#FAFAFA</color>
+    <color name="sport_bg_gradient_end">#F0F0F0</color>
+
+    <!-- UI Elements -->
+    <color name="sport_divider">#1F000000</color>
+    <color name="sport_stroke">#1F000000</color>
+    <color name="sport_shadow_primary">#4000C853</color>
 
     <!-- 兼容之前紫色引用 -->
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#00C853</color>
+    <color name="purple_700">#009624</color>
+    <color name="purple_200">#69F0AE</color>
 </resources>

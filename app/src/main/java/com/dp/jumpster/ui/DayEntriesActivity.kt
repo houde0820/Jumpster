@@ -64,6 +64,7 @@ class DayEntriesActivity : AppCompatActivity() {
         lineChart.apply {
             description.isEnabled = false  // 隐藏描述
             legend.isEnabled = true       // 显示图例
+            legend.textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary) // 图例文字颜色
             setTouchEnabled(true)         // 允许触摸
             setScaleEnabled(true)         // 允许缩放
             setPinchZoom(true)            // 允许捕捉缩放
@@ -74,13 +75,13 @@ class DayEntriesActivity : AppCompatActivity() {
                 position = XAxis.XAxisPosition.BOTTOM  // X轴在底部
                 granularity = 1f                      // 最小间隔
                 setDrawGridLines(true)                // 绘制网格线
-                textColor = Color.GRAY                // 文字颜色
+                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)               // 文字颜色
             }
             
             // 设置左侧Y轴
             axisLeft.apply {
                 setDrawGridLines(true)    // 绘制网格线
-                textColor = Color.GRAY    // 文字颜色
+                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)   // 文字颜色
             }
             
             // 关闭右侧Y轴
@@ -88,7 +89,7 @@ class DayEntriesActivity : AppCompatActivity() {
             
             // 设置空数据提示
             setNoDataText("暂无数据")
-            setNoDataTextColor(Color.GRAY)
+            setNoDataTextColor(ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary))
         }
     }
     
@@ -123,15 +124,17 @@ class DayEntriesActivity : AppCompatActivity() {
         }
         
         // 创建数据集
-        val dataSet = LineDataSet(chartEntries, "累计数").apply {
+        val dataSet = LineDataSet(chartEntries, getString(R.string.label_cumulative)).apply {
             color = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_primary)
             lineWidth = 2f
             circleRadius = 4f
-            setCircleColor(ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_primary))
+            setCircleColor(ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_secondary))
             setDrawCircleHole(false)
             valueTextSize = 10f
-            valueTextColor = Color.GRAY
-            mode = LineDataSet.Mode.LINEAR
+            valueTextColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_on_background)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            setDrawFilled(true)
+            fillDrawable = ContextCompat.getDrawable(this@DayEntriesActivity, R.drawable.fade_sport_primary)
         }
         
         // 创建 LineData 对象

@@ -61,19 +61,27 @@ class TodayEntryAdapter : ListAdapter<JumpEntry, TodayEntryAdapter.EntryVH>(Diff
         private val timeFmt = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         
         fun bind(e: JumpEntry) {
-            val typeLabel = if (e.type == "add") "追加" else "覆盖"
-            val valueStr = if (e.type == "add") "+${e.value}" else "→ ${e.totalAfter}"
+            val context = itemView.context
+            val typeLabel = if (e.type == "add") context.getString(R.string.label_type_add) else context.getString(R.string.label_type_set)
+            val valueStr = if (e.type == "add") context.getString(R.string.fmt_add_value, e.value) else context.getString(R.string.fmt_cover_value, e.totalAfter)
             title.text = "$typeLabel $valueStr"
             val colorId = if (e.type == "add") R.color.sport_primary else R.color.sport_secondary
             title.setTextColor(ContextCompat.getColor(itemView.context, colorId))
             
             // 显示时间范围
+            val timeStr = timeFmt.format(Date(e.timestamp))
             val timeInfo = if (e.startTime > 0 && e.endTime > 0 && e.endTime > e.startTime) {
                 val duration = (e.endTime - e.startTime) / 1000 // 秒
-                val durationStr = if (duration < 60) "${duration}秒" else "${duration/60}分${duration%60}秒"
-                "${timeFmt.format(Date(e.timestamp))} | 用时 $durationStr | 累计 ${e.totalAfter}"
+                val durationStr = if (duration < 60) {
+                    context.getString(R.string.fmt_duration_sec, duration)
+                } else {
+                    val min = duration / 60
+                    val sec = duration % 60
+                    context.getString(R.string.fmt_duration_min_sec, min, sec)
+                }
+                context.getString(R.string.fmt_time_duration_total, timeStr, durationStr, e.totalAfter)
             } else {
-                "${timeFmt.format(Date(e.timestamp))} | 累计 ${e.totalAfter}"
+                context.getString(R.string.fmt_time_total, timeStr, e.totalAfter)
             }
             subtitle.text = timeInfo
         }

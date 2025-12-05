@@ -56,7 +56,7 @@ class MonthCalendarActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "月度统计"
+        supportActionBar?.title = getString(R.string.title_monthly_stats)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         calendarView = findViewById(R.id.calendarView)
@@ -68,7 +68,7 @@ class MonthCalendarActivity : AppCompatActivity() {
 
         val currentMonth = YearMonth.now()
         currentMonthStr = currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"))
-        monthTitleText.text = "$currentMonthStr 跳绳统计"
+        monthTitleText.text = getString(R.string.fmt_month_title, currentMonthStr)
 
         setupWeekHeader()
 
@@ -80,7 +80,7 @@ class MonthCalendarActivity : AppCompatActivity() {
 
         calendarView.monthScrollListener = { month: CalendarMonth ->
             currentMonthStr = month.yearMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"))
-            monthTitleText.text = "$currentMonthStr 跳绳统计"
+            monthTitleText.text = getString(R.string.fmt_month_title, currentMonthStr)
             loadMonthData(month.yearMonth)
         }
 
@@ -96,7 +96,15 @@ class MonthCalendarActivity : AppCompatActivity() {
 
     private fun setupWeekHeader() {
         weekHeaderLayout.removeAllViews()
-        val labels = listOf("一", "二", "三", "四", "五", "六", "日")
+        val labels = listOf(
+            getString(R.string.week_day_mon),
+            getString(R.string.week_day_tue),
+            getString(R.string.week_day_wed),
+            getString(R.string.week_day_thu),
+            getString(R.string.week_day_fri),
+            getString(R.string.week_day_sat),
+            getString(R.string.week_day_sun)
+        )
         val itemWeight = 1f
         labels.forEach { label ->
             val tv = TextView(this)
@@ -127,29 +135,86 @@ class MonthCalendarActivity : AppCompatActivity() {
                 .values.sum()
             launch(Dispatchers.Main) {
                 calendarView.notifyCalendarChanged()
-                monthSumText.text = "本月合计：$currentMonthSum"
-                updateWeekSum(LocalDate.now())
+                updateStats(yearMonth)
             }
         }
     }
 
-    private fun updateWeekSum(date: LocalDate) {
-        val startOfWeek = date.with(DayOfWeek.MONDAY)
-        val endOfWeek = date.with(DayOfWeek.SUNDAY)
-        var sum = 0
-        var d = startOfWeek
-        while (!d.isAfter(endOfWeek)) {
-            sum += dayCountMap[d] ?: 0
-            d = d.plusDays(1)
+    private fun updateStats(month: YearMonth) {
+        val monthStr = month.atDay(1).format(DateTimeFormatter.ofPattern("yyyy-MM"))
+        monthTitleText.text = getString(R.string.fmt_month_title, monthStr)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val monthTotal = currentMonthSum // Use the calculated sum
+
+            // Calculate week total
+            val today = LocalDate.now()
+            // Assume Monday is start of week
+            val startOfWeek = today.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
+            val endOfWeek = today.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY))
+
+            var weekTotal = 0
+            dayCountMap.forEach { (date, count) ->
+                if (!date.isBefore(startOfWeek) && !date.isAfter(endOfWeek)) {
+                    weekTotal += count
+                }
+            }
+
+            launch(Dispatchers.Main) {
+                monthSumText.text = getString(R.string.fmt_month_total, monthTotal)
+                weekSumText.text = getString(R.string.fmt_week_total, weekTotal)
+
+                if (dayCountMap.isEmpty()) {
+                    Toast.makeText(this@MonthCalendarActivity, getString(R.string.msg_no_month_records), Toast.LENGTH_SHORT).show()
+                }
+            }
         }
-        weekSumText.text = "本周合计：$sum"
     }
     
+    private fun updateWeekSum(date: LocalDate) {
+        // Helper to update week sum when a day is selected
+        lifecycleScope.launch(Dispatchers.IO) {
+             val startOfWeek = date.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
+             val endOfWeek = date.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY))
+             
+             var weekTotal = 0
+             // We need to query DB or use dayCountMap if it covers the range. 
+             // dayCountMap only has current month. Safer to query DB for accurate week sum across months.
+             val dao = AppDatabase.getInstance(this@MonthCalendarActivity).jumpRecordDao()
+             // Querying a bit inefficiently here but safe
+             val records = dao.getRecordsBetween(startOfWeek.format(DateTimeFormatter.ISO_DATE), endOfWeek.format(DateTimeFormatter.ISO_DATE))
+             weekTotal = records.sumOf { it.count }
+             
+             launch(Dispatchers.Main) {
+                 weekSumText.text = getString(R.string.fmt_week_total, weekTotal)
+             }
+        }
+    }
+
+    private fun showDayDetails(date: LocalDate) {
+        val dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val record = AppDatabase.getInstance(this@MonthCalendarActivity).jumpRecordDao().getRecordByDate(dateStr)
+            val count = record?.count ?: 0
+
+            launch(Dispatchers.Main) {
+                selectedInfoText.text = getString(R.string.fmt_selected_day_info, dateStr, count)
+
+                // Click to jump to details
+                if (count > 0) {
+                    val intent = Intent(this@MonthCalendarActivity, DayEntriesActivity::class.java)
+                    intent.putExtra("date", dateStr)
+                    startActivity(intent)
+                }
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_month, menu)
         return true
     }
-    
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_share_month -> {
@@ -168,7 +233,7 @@ class MonthCalendarActivity : AppCompatActivity() {
         if (currentMonthSum > 0) {
             ShareCardGenerator(this).shareMonth(currentMonthSum, currentMonthStr)
         } else {
-            Toast.makeText(this, "本月还没有记录哦", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_no_month_records), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -190,7 +255,7 @@ class MonthCalendarActivity : AppCompatActivity() {
                 vibrator.vibrate(15)
             }
         } catch (_: SecurityException) {
-            // 无权限时忽略，仅保留触觉反馈
+            // Ignore
         }
     }
 
@@ -224,7 +289,7 @@ class MonthCalendarActivity : AppCompatActivity() {
             view.setOnClickListener {
                 vibrateClick(it)
                 val c = dayCountMap[date] ?: 0
-                selectedInfoText.text = "$date：累计 $c"
+                selectedInfoText.text = getString(R.string.fmt_selected_day_info, date.format(DateTimeFormatter.ISO_DATE), c)
                 updateWeekSum(date)
                 val i = Intent(this@MonthCalendarActivity, DayEntriesActivity::class.java)
                 i.putExtra("date", date.format(DateTimeFormatter.ISO_DATE))

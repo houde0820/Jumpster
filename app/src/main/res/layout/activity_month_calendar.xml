@@ -5,18 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="0dp"
-    android:background="@android:color/white">
+    android:background="@color/sport_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/sport_primary"
-        app:navigationIcon="@drawable/abc_ic_ab_back_material"
-        app:title="本月统计"
+        android:backgroundTint="@color/sport_background"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/sport_on_background"
+        app:title="@string/title_monthly_stats"
         app:titleCentered="true"
         app:titleTextAppearance="@style/TextAppearance.JS.Title"
-        app:titleTextColor="@color/sport_on_primary" />
+        app:titleTextColor="@color/sport_on_background" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,9 +29,10 @@
             android:id="@+id/text_month_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="本月跳绳统计"
+            android:text="@string/label_month_stats"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="@color/sport_on_background"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"/>
 
@@ -38,27 +40,27 @@
             android:id="@+id/text_month_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="本月合计：0"
+            android:text="Month Total: 0"
             android:textSize="14sp"
-            android:textColor="#444"
+            android:textColor="@color/sport_text_secondary"
             android:layout_marginBottom="4dp"/>
 
         <TextView
             android:id="@+id/text_week_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="本周合计：0"
+            android:text="Week Total: 0"
             android:textSize="14sp"
-            android:textColor="#444"
+            android:textColor="@color/sport_text_secondary"
             android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/text_selected_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="选择某一天查看累计"
+            android:text="@string/label_select_day"
             android:textSize="14sp"
-            android:textColor="#777"
+            android:textColor="@color/sport_text_secondary"
             android:layout_marginBottom="8dp"/>
 
         <LinearLayout

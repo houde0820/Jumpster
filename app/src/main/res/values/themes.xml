@@ -2,14 +2,30 @@
     <style name="Base.Theme.Jumpster" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/sport_primary</item>
         <item name="colorOnPrimary">@color/sport_on_primary</item>
+        <item name="colorPrimaryContainer">@color/sport_primary_variant</item>
+        <item name="colorOnPrimaryContainer">@color/sport_on_primary</item>
+        
         <item name="colorSecondary">@color/sport_secondary</item>
+        <item name="colorOnSecondary">@color/sport_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/sport_secondary_variant</item>
+        
+        <item name="android:colorBackground">@color/sport_background</item>
         <item name="colorSurface">@color/sport_surface</item>
-        <item name="colorControlHighlight">@color/purple_200</item>
+        <item name="colorOnSurface">@color/sport_on_surface</item>
+        <item name="colorSurfaceVariant">@color/sport_surface_light</item>
+        <item name="colorOnSurfaceVariant">@color/sport_on_surface</item>
+        
+        <item name="colorError">@color/sport_error</item>
+        <item name="colorOnError">@color/black</item>
 
         <item name="textInputStyle">@style/Widget.JS.TextInputLayout</item>
         <item name="materialButtonStyle">@style/Widget.JS.Button</item>
         <item name="materialButtonOutlinedStyle">@style/Widget.JS.Button.Outlined</item>
-        <item name="actionMenuTextColor">@color/sport_on_primary</item>
+        <item name="actionMenuTextColor">@color/sport_on_background</item>
+        
+        <!-- 状态栏颜色 -->
+        <item name="android:statusBarColor">@color/sport_background</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.Jumpster" parent="Base.Theme.Jumpster" />

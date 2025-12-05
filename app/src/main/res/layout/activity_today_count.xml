@@ -1,164 +1,204 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/sport_surface">
+    android:background="@drawable/bg_sport">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp"
-        android:background="@drawable/sport_gradient_bg"
-        android:paddingTop="32dp">
+        android:padding="24dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/sport_primary"
+            android:background="@android:color/transparent"
             android:elevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="跳绳计数器"
+            app:title="@string/title_today_count"
             app:titleCentered="true"
             app:titleTextAppearance="@style/TextAppearance.JS.Title"
-            app:titleTextColor="@color/sport_on_primary"
-            app:navigationIcon="@drawable/ic_jump_rope"
-            app:navigationIconTint="@color/sport_on_primary" />
+            app:titleTextColor="@color/sport_on_background"
+            app:navigationIcon="@drawable/ic_settings_gear"
+            app:navigationIconTint="@color/sport_on_background" />
 
         <TextView
             android:id="@+id/text_today_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="2025-10-30"
             android:textColor="@color/sport_text_secondary"
             android:textSize="14sp"
+            android:letterSpacing="0.1"
+            android:fontFamily="sans-serif-medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_total"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:backgroundTint="@color/sport_card_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_today_date">
-
-            <TextView
-                android:id="@+id/text_count_total"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:text="今日累计：0"
-                android:textColor="@color/sport_text_primary"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:minHeight="80dp" />
-        </androidx.cardview.widget.CardView>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@id/til_input"
-            style="@style/Widget.JS.TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/btn_undo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_total">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:digits="0123456789+-"
-                android:hint="输入数量，支持加减运算"
-                android:importantForAutofill="no"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_undo"
-            style="@style/Widget.JS.Button.Outlined"
+        <!-- Hero Section: Counter -->
+        <LinearLayout
+            android:id="@+id/layout_counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="撤销"
-            android:textColor="@color/sport_secondary"
-            app:cornerRadius="20dp"
-            app:strokeColor="@color/sport_secondary"
-            app:strokeWidth="2dp"
-            app:layout_constraintBottom_toBottomOf="@+id/til_input"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/til_input"
-            app:layout_constraintTop_toTopOf="@+id/til_input" />
-
-        <LinearLayout
-            android:id="@+id/row_buttons"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            app:layout_constraintTop_toBottomOf="@id/text_today_date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/til_input">
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_add"
-                style="@style/Widget.JS.Button"
-                android:layout_width="0dp"
+            <!-- Glow effect background (optional, simulated with a view) -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                
+                <TextView
+                    android:id="@+id/text_count_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    style="@style/TextAppearance.JS.BigNumber"
+                    android:textSize="96sp"
+                    android:shadowColor="@color/sport_shadow_primary"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="20" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="追加"
-                android:textColor="@color/sport_on_primary"
-                app:backgroundTint="@color/sport_primary"
-                app:cornerRadius="24dp" />
-
-            <Space
-                android:layout_width="16dp"
-                android:layout_height="0dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cover"
-                style="@style/Widget.JS.Button.Outlined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="覆盖"
-                android:textColor="@color/sport_secondary"
-                app:cornerRadius="24dp"
-                app:strokeColor="@color/sport_secondary"
-                app:strokeWidth="2dp" />
+                android:text="@string/unit_jumps"
+                android:textColor="@color/sport_primary"
+                android:textSize="16sp"
+                android:letterSpacing="0.2"
+                android:textStyle="bold"
+                android:layout_marginTop="-8dp" />
         </LinearLayout>
+
+        <!-- Control Panel Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_controls"
+            style="@style/Widget.JS.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            app:cardElevation="8dp"
+            app:cardCornerRadius="24dp"
+            app:strokeColor="@color/sport_stroke"
+            app:strokeWidth="1dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_counter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_input"
+                        style="@style/Widget.JS.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="0123456789+-"
+                            android:hint="@string/hint_enter_jumps"
+                            android:textColor="@color/sport_on_background"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:background="@android:color/transparent"
+                            android:importantForAutofill="no"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_undo"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:icon="@drawable/ic_undo"
+                        app:iconTint="@color/sport_text_secondary"
+                        app:rippleColor="@color/sport_primary" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/sport_divider"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_add"
+                        style="@style/Widget.JS.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="2"
+                        android:text="@string/btn_add"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp" />
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_cover"
+                        style="@style/Widget.JS.Button.Outlined"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="@string/btn_set"
+                        android:textSize="16sp"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/text_today_history_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="跳绳记录"
-            android:textColor="@color/sport_text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp"
+            android:text="@string/label_history"
+            style="@style/TextAppearance.JS.Label"
+            android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/row_buttons" />
+            app:layout_constraintTop_toBottomOf="@id/card_controls" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_today_entries"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="12dp"
             android:layoutAnimation="@anim/layout_fall_down"
-            android:paddingTop="8dp"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -169,7 +209,7 @@
     <com.dp.jumpster.ui.FireworksView
         android:id="@+id/fireworks"
         android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </FrameLayout>

@@ -4,24 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/sport_background"
     tools:context=".ui.TrendChartActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/sport_background"
+        android:elevation="0dp"
+        app:title="@string/title_trends"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.JS.Title"
+        app:titleTextColor="@color/sport_on_background"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/sport_on_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/sport_background"
+        app:tabTextColor="@color/sport_text_secondary"
+        app:tabSelectedTextColor="@color/sport_primary"
+        app:tabIndicatorColor="@color/sport_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
@@ -31,12 +40,12 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="周趋势" />
+            android:text="@string/tab_weekly" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="月趋势" />
+            android:text="@string/tab_monthly" />
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -44,6 +53,10 @@
         android:id="@+id/chart_type_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/sport_background"
+        app:tabTextColor="@color/sport_text_secondary"
+        app:tabSelectedTextColor="@color/sport_secondary"
+        app:tabIndicatorColor="@color/sport_secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tab_layout"
@@ -53,12 +66,12 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="柱状图" />
+            android:text="@string/tab_bar" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="折线图" />
+            android:text="@string/tab_line" />
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -93,8 +106,9 @@
         android:id="@+id/text_no_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="暂无数据"
+        android:text="@string/msg_no_data"
         android:textSize="18sp"
+        android:textColor="@color/sport_text_secondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

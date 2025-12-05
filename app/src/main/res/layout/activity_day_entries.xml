@@ -5,24 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/sport_surface">
+    android:background="@color/sport_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/sport_primary"
-        app:title="当天记录"
+        android:backgroundTint="@color/sport_background"
+        app:title="@string/title_daily_record"
         app:titleCentered="true"
-        app:titleTextColor="@color/sport_on_primary" />
+        app:titleTextAppearance="@style/TextAppearance.JS.Title"
+        app:titleTextColor="@color/sport_on_background"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/sport_on_background" />
 
     <TextView
         android:id="@+id/text_day_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="2025-10-30 记录"
+        android:text="2025-10-30 Record"
         android:textSize="16sp"
-        android:textColor="#333"
+        android:textColor="@color/sport_text_secondary"
         android:padding="16dp"/>
     
     <!-- 折线图卡片 -->
@@ -33,8 +36,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
+        app:cardBackgroundColor="@color/sport_surface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp">
         
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,10 +50,10 @@
                 android:id="@+id/text_chart_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="当日跳绳趋势"
+                android:text="@string/title_daily_trend"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#333"
+                android:textColor="@color/sport_on_surface"
                 android:gravity="center"
                 android:paddingBottom="4dp"/>
             
@@ -64,10 +68,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="详细记录"
+        android:text="@string/label_details"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="#333"
+        android:textColor="@color/sport_text_secondary"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
@@ -80,6 +84,7 @@
         android:layout_weight="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:clipToPadding="false"
         tools:listitem="@layout/item_today_entry"/>
 
 </LinearLayout>

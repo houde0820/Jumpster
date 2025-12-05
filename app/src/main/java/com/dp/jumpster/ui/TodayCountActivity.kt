@@ -1,5 +1,6 @@
 package com.dp.jumpster.ui
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
@@ -117,6 +119,7 @@ class TodayCountActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             vibrateClick(it)
             onAddClick()
+            Toast.makeText(this@TodayCountActivity, "111", Toast.LENGTH_SHORT).show()
         }
         coverButton.setOnClickListener {
             vibrateClick(it)
@@ -128,6 +131,8 @@ class TodayCountActivity : AppCompatActivity() {
         if (ReminderService.isReminderActive(this)) {
             showReminderStatus()
         }
+
+        checkRealDisplayMetrics()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -161,7 +166,7 @@ class TodayCountActivity : AppCompatActivity() {
         if (todayCount > 0) {
             ShareCardGenerator(this).shareToday(todayCount, todayStr)
         } else {
-            Toast.makeText(this, "今日还没有记录哦", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_no_records_today), Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -175,10 +180,10 @@ class TodayCountActivity : AppCompatActivity() {
         
         if (isActive) {
             if (isTimerStarted) {
-                val message = "提醒已开启，每10分钟提醒一次"
+                val message = getString(R.string.msg_reminder_active_interval)
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             } else {
-                val message = "提醒已开启，待记录第一次跳绳数据后开始计时"
+                val message = getString(R.string.msg_reminder_active_first)
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
         }
@@ -189,7 +194,7 @@ class TodayCountActivity : AppCompatActivity() {
             val record = db.jumpRecordDao().getRecordByDate(todayStr)
             todayCount = record?.count ?: 0
             launch(Dispatchers.Main) {
-                countText.text = "今日累计：$todayCount"
+                countText.text = getString(R.string.fmt_today_total, todayCount)
             }
         }
     }
@@ -219,7 +224,7 @@ class TodayCountActivity : AppCompatActivity() {
     private fun parseAndValidateInput(): Int? {
         val raw = inputEdit.text?.toString()?.trim() ?: ""
         if (raw.isEmpty()) {
-            inputEdit.error = "请输入跳绳次数"
+            inputEdit.error = getString(R.string.error_enter_jumps)
             inputEdit.requestFocus()
             return null
         }
@@ -246,13 +251,13 @@ class TodayCountActivity : AppCompatActivity() {
         
         // 验证结果
         if (num == null) {
-            inputEdit.error = if (hasOperators) "表达式格式不正确" else "请输入有效数字"
+            inputEdit.error = if (hasOperators) getString(R.string.error_invalid_format) else getString(R.string.error_invalid_number)
             inputEdit.requestFocus()
             return null
         }
         
         if (num <= 0) {
-            inputEdit.error = "跳绳次数必须大于0"
+            inputEdit.error = getString(R.string.error_must_be_positive)
             inputEdit.requestFocus()
             return null
         }
@@ -261,12 +266,12 @@ class TodayCountActivity : AppCompatActivity() {
         if (hasOperators) {
             inputEdit.setText(num.toString())
             inputEdit.setSelection(inputEdit.text?.length ?: 0)
-            Toast.makeText(this, "计算结果: $num", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_calc_result, num), Toast.LENGTH_SHORT).show()
         }
         
         val MAX_INPUT = 100_000
         if (num > MAX_INPUT) {
-            Toast.makeText(this, "输入过大，已限制为 $MAX_INPUT", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_input_too_large, MAX_INPUT), Toast.LENGTH_SHORT).show()
             inputEdit.setText(MAX_INPUT.toString())
             inputEdit.setSelection(inputEdit.text?.length ?: 0)
             return MAX_INPUT
@@ -293,7 +298,7 @@ class TodayCountActivity : AppCompatActivity() {
     private fun validateTotal(total: Int): Boolean {
         val MAX_TOTAL = 1_000_000
         if (total > MAX_TOTAL) {
-            Toast.makeText(this, "累计过大，最大支持 $MAX_TOTAL", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_total_too_large, MAX_TOTAL), Toast.LENGTH_SHORT).show()
             return false
         }
         return true
@@ -304,7 +309,7 @@ class TodayCountActivity : AppCompatActivity() {
             val entryDao = db.jumpEntryDao()
             val latest = entryDao.getLatestByDate(todayStr) ?: run {
                 launch(Dispatchers.Main) {
-                    Toast.makeText(this@TodayCountActivity, "无可撤销记录", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TodayCountActivity, getString(R.string.msg_no_undo), Toast.LENGTH_SHORT).show()
                 }
                 return@launch
             }
@@ -324,12 +329,12 @@ class TodayCountActivity : AppCompatActivity() {
             val updatedList = entryDao.getEntriesByDate(todayStr)
             val limited = if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
             launch(Dispatchers.Main) {
-                countText.text = "今日累计：$todayCount"
+                countText.text = getString(R.string.fmt_today_total, todayCount)
                 adapter.setHighlightKey(null)
                 adapter.submitList(ArrayList(limited)) {
                     rvToday.scrollToPosition(0)
                 }
-                Toast.makeText(this@TodayCountActivity, "已撤销最近一次操作", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TodayCountActivity, getString(R.string.msg_undo_success), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -337,7 +342,7 @@ class TodayCountActivity : AppCompatActivity() {
     private fun saveTodayCountAndEntry(prev: Int, type: String, inputVal: Int, finalCount: Int) {
         // 立即更新内存中的计数，防止快速点击导致的竞态条件
         todayCount = finalCount
-        countText.text = "今日累计：$todayCount"
+        countText.text = getString(R.string.fmt_today_total, todayCount)
         
         val endTime = System.currentTimeMillis()
         lifecycleScope.launch(Dispatchers.IO) {
@@ -435,5 +440,32 @@ class TodayCountActivity : AppCompatActivity() {
                 countText.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
             }
             .start()
+    }
+
+    /**
+     * 打印当前 Activity 实际占用的屏幕参数
+     */
+    fun Activity.checkRealDisplayMetrics() {
+        // 获取当前资源中的显示指标
+        val metrics = resources.displayMetrics
+
+        // 1. 获取 App 实际可用绘图区域的宽/高 (已自动减去状态栏、侧边栏等系统占用)
+        val widthPixels = metrics.widthPixels
+        val heightPixels = metrics.heightPixels
+
+        // 2. 获取逻辑密度
+        val density = metrics.density
+        val densityDpi = metrics.densityDpi
+
+        // 3. 计算 App 感知到的 dp 宽度 (宽度像素 / density)
+        val widthDp = widthPixels / density
+        val heightDp = heightPixels / density
+
+        Log.d("DisplayCheck", "=========== 屏幕参数检查 (Kotlin) ===========")
+        Log.d("DisplayCheck", "1. 物理全屏 (wm size): 2240 x 1260 ")
+        Log.d("DisplayCheck", "2. App可用分辨率 (px): $widthPixels x $heightPixels")
+        Log.d("DisplayCheck", "3. Density: $density (DPI: $densityDpi)")
+        Log.d("DisplayCheck", "4. App dp: ${widthDp}dp x ${heightDp}dp")
+        Log.d("DisplayCheck", "=========================================")
     }
 }
