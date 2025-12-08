@@ -12,7 +12,7 @@
     <string name="msg_no_records_today">今日还没有记录哦</string>
     <string name="msg_reminder_active_interval">提醒已开启，每10分钟提醒一次</string>
     <string name="msg_reminder_active_first">提醒已开启，待记录第一次跳绳数据后开始计时</string>
-    <string name="fmt_today_total">今日累计：%d</string>
+    <string name="fmt_today_total">今日累计\n%d</string>
     <string name="error_enter_jumps">请输入跳绳次数</string>
     <string name="error_invalid_format">表达式格式不正确</string>
     <string name="error_invalid_number">请输入有效数字</string>

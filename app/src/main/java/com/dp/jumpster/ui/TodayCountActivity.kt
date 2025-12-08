@@ -144,6 +144,8 @@ class TodayCountActivity : AppCompatActivity() {
         // 如果日期变更了，或者这是第一次加载
         if (loadedDate != currentToday) {
             loadedDate = currentToday
+            // 更新toolbar副标题显示日期
+            supportActionBar?.subtitle = currentToday
             refreshTodayCount()
             refreshTodayEntries()
         } else {
