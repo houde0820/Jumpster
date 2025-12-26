@@ -13,6 +13,9 @@ interface JumpEntryDao {
     @Query("SELECT * FROM jump_entry WHERE date = :date ORDER BY timestamp DESC, id DESC")
     suspend fun getEntriesByDate(date: String): List<JumpEntry>
 
+    @Query("SELECT * FROM jump_entry WHERE date = :date ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    suspend fun getRecentEntries(date: String, limit: Int): List<JumpEntry>
+
     @Query("SELECT * FROM jump_entry WHERE date = :date ORDER BY timestamp DESC, id DESC LIMIT 1")
     suspend fun getLatestByDate(date: String): JumpEntry?
 

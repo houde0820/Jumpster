@@ -2,29 +2,36 @@ package com.dp.jumpster.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.dp.jumpster.R
 import com.dp.jumpster.data.AppDatabase
 import com.dp.jumpster.data.JumpEntry
+import com.dp.jumpster.data.JumpRepository
+import com.dp.jumpster.ui.viewmodel.DayEntriesViewModel
+import com.dp.jumpster.ui.viewmodel.DayEntriesUiState
+import com.dp.jumpster.ui.viewmodel.ViewModelFactory
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DayEntriesActivity : AppCompatActivity() {
@@ -34,19 +41,27 @@ class DayEntriesActivity : AppCompatActivity() {
     private lateinit var lineChart: LineChart
     private val adapter = TodayEntryAdapter()
     private var currentDate: String = ""
+    
+    private lateinit var viewModel: DayEntriesViewModel
 
     private val detailLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // 数据被修改，重新加载
-            loadData(currentDate)
+            // Data modified, reload
+            viewModel.loadData(currentDate)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_day_entries)
+        
+        val db = AppDatabase.getInstance(this)
+        val repository = JumpRepository(db.jumpRecordDao(), db.jumpEntryDao())
+        val factory = ViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[DayEntriesViewModel::class.java]
+
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -76,79 +91,88 @@ class DayEntriesActivity : AppCompatActivity() {
         }
 
         setupChart()
+        setupObservers()
+        
+        // Initial Load
+        if (currentDate.isNotEmpty()) {
+            viewModel.loadData(currentDate)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        // 每次返回都刷新数据
-        loadData(currentDate)
+        // Reload every time on resume to ensure fresh data
+        if (currentDate.isNotEmpty()) {
+            viewModel.loadData(currentDate)
+        }
+    }
+    
+    private fun setupObservers() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                         is DayEntriesUiState.Loading -> {
+                             // Loading
+                         }
+                         is DayEntriesUiState.Success -> {
+                             adapter.submitList(state.entries)
+                             if (state.entries.isNotEmpty()) {
+                                 updateChart(state.entries)
+                             }
+                         }
+                    }
+                }
+            }
+        }
     }
     
     private fun setupChart() {
-        // 设置图表基本属性
+        // Basic configuration
         lineChart.apply {
-            description.isEnabled = false  // 隐藏描述
-            legend.isEnabled = true       // 显示图例
-            legend.textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary) // 图例文字颜色
-            setTouchEnabled(true)         // 允许触摸
-            setScaleEnabled(true)         // 允许缩放
-            setPinchZoom(true)            // 允许捕捉缩放
-            setDrawGridBackground(false)  // 不绘制网格背景
+            description.isEnabled = false
+            legend.isEnabled = true
+            legend.textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)
+            setTouchEnabled(true)
+            setScaleEnabled(true)
+            setPinchZoom(true)
+            setDrawGridBackground(false)
             
-            // 设置X轴
+            // X Axis
             xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM  // X轴在底部
-                granularity = 1f                      // 最小间隔
-                setDrawGridLines(true)                // 绘制网格线
-                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)               // 文字颜色
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(true)
+                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)
             }
             
-            // 设置左侧Y轴
+            // Left Y Axis
             axisLeft.apply {
-                setDrawGridLines(true)    // 绘制网格线
-                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)   // 文字颜色
+                setDrawGridLines(true)
+                textColor = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary)
             }
             
-            // 关闭右侧Y轴
+            // Right Y Axis
             axisRight.isEnabled = false
             
-            // 设置空数据提示
             setNoDataText("暂无数据")
             setNoDataTextColor(ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_text_secondary))
         }
     }
     
-    private fun loadData(date: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getInstance(this@DayEntriesActivity)
-            val entries = db.jumpEntryDao().getEntriesByDate(date)
-            
-            // 更新列表
-            launch(Dispatchers.Main) { adapter.submitList(entries) }
-            
-            // 更新图表
-            if (entries.isNotEmpty()) {
-                updateChart(entries)
-            }
-        }
-    }
-    
     private fun updateChart(entries: List<JumpEntry>) {
-        // 将数据按时间戳正序排序
         val sortedEntries = entries.sortedBy { it.timestamp }
         
-        // 准备图表数据
         val chartEntries = mutableListOf<Entry>()
         val timeLabels = mutableListOf<String>()
-        val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val timeFmt = DateTimeFormatter.ofPattern("HH:mm")
         
-        // 添加数据点
         sortedEntries.forEachIndexed { index, entry ->
             chartEntries.add(Entry(index.toFloat(), entry.totalAfter.toFloat()))
-            timeLabels.add(timeFmt.format(Date(entry.timestamp)))
+            val localTime = Instant.ofEpochMilli(entry.timestamp).atZone(ZoneId.systemDefault())
+            timeLabels.add(timeFmt.format(localTime))
         }
         
-        // 创建数据集
         val dataSet = LineDataSet(chartEntries, getString(R.string.label_cumulative)).apply {
             color = ContextCompat.getColor(this@DayEntriesActivity, R.color.sport_primary)
             lineWidth = 2f
@@ -162,10 +186,8 @@ class DayEntriesActivity : AppCompatActivity() {
             fillDrawable = ContextCompat.getDrawable(this@DayEntriesActivity, R.drawable.fade_sport_primary)
         }
         
-        // 创建 LineData 对象
         val lineData = LineData(dataSet)
         
-        // 创建格式化器
         val formatter = object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
                 val index = value.toInt()
@@ -173,11 +195,8 @@ class DayEntriesActivity : AppCompatActivity() {
             }
         }
         
-        // 在主线程上更新UI
-        lifecycleScope.launch(Dispatchers.Main) {
-            lineChart.xAxis.valueFormatter = formatter
-            lineChart.data = lineData
-            lineChart.invalidate()
-        }
+        lineChart.xAxis.valueFormatter = formatter
+        lineChart.data = lineData
+        lineChart.invalidate()
     }
 }
